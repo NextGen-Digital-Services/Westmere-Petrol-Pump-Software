@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light Theme - Warm Ivory background, Charcoal text, Olive for actions */
+  --color-bg: #F3F0E8;
+  --color-card: #FAF8F4;
+  --color-card-subtle: #EBE6DA;
+  --color-border: #D8D2C2;
+  --color-border-subtle: #E6E1D4;
+  --color-text: #1E201C;
+  --color-text-muted: #676B61;
+  --color-text-faint: #989C91;
+  --color-accent: #737B54;
+  --color-accent-hover: #5F6644;
+  --color-accent-brass: #B69A63;
+  --color-danger: #9E473D;
+  --color-warning: #B69A63;
+  --color-success: #737B54;
+  --color-selection: #E5DFC8;
+}
+
+.dark {
+  /* Dark Theme - Deep Charcoal background, Ivory text, Brass for highlights */
+  --color-bg: #171916;
+  --color-card: #20231E;
+  --color-card-subtle: #292D26;
+  --color-border: #31362D;
+  --color-border-subtle: #242821;
+  --color-text: #F3F0E8;
+  --color-text-muted: #A3A79B;
+  --color-text-faint: #63675C;
+  --color-accent: #B69A63;
+  --color-accent-hover: #C9B07D;
+  --color-accent-brass: #B69A63;
+  --color-danger: #BD584C;
+  --color-warning: #C7AD79;
+  --color-success: #8A9367;
+  --color-selection: #33382D;
+}
+
+* {
+  box-sizing: border-box;
+  border-color: var(--color-border);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-manrope), sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Tabular nums for all numbers */
+.tabular-nums,
+[data-tabular-nums] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Headings with Cormorant Garamond */
+h1, h2, h3, .font-serif {
+  font-family: var(--font-cormorant), Georgia, serif;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Thermal receipt printing */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-receipt, .printable-receipt * {
+    visibility: visible;
+  }
+  .printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    margin: 0 auto;
+    padding: 4mm;
+    font-size: 11px;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+@page {
+  size: 80mm auto;
+  margin: 0;
+}
