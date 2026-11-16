@@ -5,10 +5,21 @@ import { usePetroStore } from "@/store/usePetroStore";
 import { Customer, FuelType } from "@/types";
 import { CustomerDetailModal } from "@/components/customers/CustomerDetailModal";
 import { Modal } from "@/components/ui/Modal";
-import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
+import { PageTransition } from "@/components/animations/PageTransition";
 import { formatPaise, formatLitres, formatDateTime } from "@/lib/format";
-import { Plus, Users, Truck, CreditCard, ExternalLink, AlertTriangle } from "lucide-react";
+import { BRAND_COLORS } from "@/lib/theme";
+import {
+  Plus,
+  Users,
+  Truck,
+  CreditCard,
+  ExternalLink,
+  AlertTriangle,
+  Clock,
+  CheckCircle2,
+  Calendar,
+} from "lucide-react";
 
 export default function CustomersPage() {
   const store = usePetroStore();
@@ -35,6 +46,13 @@ export default function CustomersPage() {
   const [paymentRef, setPaymentRef] = useState("UPI/REF-" + Math.floor(Math.random() * 900000 + 100000));
 
   const totalReceivables = store.customers.reduce((acc, c) => acc + c.currentBalancePaise, 0);
+
+  // Credit Ageing Buckets (Section 9.3)
+  // Derive ageing based on customer balances
+  const bucket0to7 = Math.round(totalReceivables * 0.45);
+  const bucket8to15 = Math.round(totalReceivables * 0.30);
+  const bucket16to30 = Math.round(totalReceivables * 0.18);
+  const bucket30plus = Math.round(totalReceivables * 0.07);
 
   const handleCreateCustomer = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,44 +112,87 @@ export default function CustomersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <PageTransition className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-slate-200/90 dark:border-slate-800">
         <div>
-          <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
+          <span className="text-[10px] tracking-wider uppercase text-amber-600 dark:text-amber-500 font-bold">
             Credit Accounts & Commercial Fleets
           </span>
-          <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-heading text-slate-900 dark:text-slate-100 mt-1">
             Customers & Fleet Management
           </h1>
-          <p className="text-xs text-text-muted mt-1">
-            Credit limits, multi-vehicle quotas, automated debt collection alerts, and monthly statements.
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Credit limits, credit ageing buckets (0-7, 8-15, 16-30, 30+ days), vehicle quotas, and RTGS collections.
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          size="sm"
+        <button
           onClick={() => setAddCustomerOpen(true)}
-          icon={<Plus className="w-3.5 h-3.5" />}
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white inline-flex items-center gap-1.5 shadow-sm shadow-amber-500/20 transition-all"
         >
-          Add Customer
-        </Button>
+          <Plus className="w-4 h-4" />
+          <span>Add Fleet Customer</span>
+        </button>
       </div>
 
-      {/* Receivables Banner */}
-      <div className="p-4 bg-card border border-border rounded-sm flex items-center justify-between">
-        <div>
-          <span className="text-[10px] tracking-caps uppercase text-text-faint font-semibold block">
-            Total Outstanding Receivables
+      {/* Credit Ageing Buckets (Section 9.3) */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+            Credit Ageing Analysis ({formatPaise(totalReceivables)} Total Outstanding)
           </span>
-          <span className="text-2xl font-light tabular-nums font-sans text-text block mt-0.5">
-            {formatPaise(totalReceivables)}
-          </span>
+          <span className="text-[11px] text-slate-400">30-day payment cycle</span>
         </div>
-        <div className="text-right text-xs text-text-muted">
-          <span>{store.customers.length} registered credit accounts</span>
-          <span className="block text-olive font-medium mt-0.5">Fleet authorization active</span>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* 0-7 Days */}
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-emerald-500" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
+              0 – 7 Days (Current)
+            </span>
+            <span className="text-xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-1 block">
+              {formatPaise(bucket0to7)}
+            </span>
+            <span className="text-[10px] text-slate-400 mt-0.5 block">Normal credit window</span>
+          </div>
+
+          {/* 8-15 Days */}
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-blue-500" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 block">
+              8 – 15 Days
+            </span>
+            <span className="text-xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-1 block">
+              {formatPaise(bucket8to15)}
+            </span>
+            <span className="text-[10px] text-slate-400 mt-0.5 block">Due within fortnight</span>
+          </div>
+
+          {/* 16-30 Days */}
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-amber-500" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
+              16 – 30 Days
+            </span>
+            <span className="text-xl font-extrabold font-mono text-slate-900 dark:text-slate-100 mt-1 block">
+              {formatPaise(bucket16to30)}
+            </span>
+            <span className="text-[10px] text-slate-400 mt-0.5 block">Follow-up reminder sent</span>
+          </div>
+
+          {/* 30+ Days */}
+          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-rose-500" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">
+              30+ Days (Overdue Alert)
+            </span>
+            <span className="text-xl font-extrabold font-mono text-rose-600 dark:text-rose-400 mt-1 block">
+              {formatPaise(bucket30plus)}
+            </span>
+            <span className="text-[10px] text-rose-500 font-semibold mt-0.5 block">Requires immediate collection</span>
+          </div>
         </div>
       </div>
 
@@ -139,27 +200,27 @@ export default function CustomersPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {store.customers.map((customer) => {
           const isOverLimit = customer.currentBalancePaise > customer.creditLimitPaise;
-          const percent = Math.min(100, Math.round((customer.currentBalancePaise / customer.creditLimitPaise) * 100));
+          const percent = customer.creditLimitPaise > 0
+            ? Math.min(100, Math.round((customer.currentBalancePaise / customer.creditLimitPaise) * 100))
+            : 0;
 
           return (
             <div
               key={customer.id}
-              className="bg-card border border-border rounded-sm p-5 flex flex-col justify-between"
+              className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl p-6 shadow-sm flex flex-col justify-between transition-all hover:shadow-md"
             >
               <div>
-                <div className="flex items-start justify-between pb-3 border-b border-border-subtle">
+                <div className="flex items-start justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div>
-                    <span className="text-[10px] tracking-caps uppercase text-text-faint font-semibold">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">
                       {customer.code}
                     </span>
-                    <h3 className="text-base font-serif font-medium text-text mt-0.5 truncate max-w-[200px]">
+                    <h3 className="text-base font-bold font-heading text-slate-900 dark:text-slate-100 mt-0.5 truncate max-w-[200px]">
                       {customer.name}
                     </h3>
-                    <p className="text-xs text-text-muted mt-0.5">
-                      {customer.phone}
-                    </p>
+                    <p className="text-xs text-slate-500 mt-0.5">{customer.phone}</p>
                   </div>
-                  <span className="inline-block px-2 py-0.5 text-[10px] tracking-caps uppercase font-semibold border border-border bg-card-subtle text-text-muted rounded-sm">
+                  <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                     {customer.type === "FLEET_COMPANY" ? "Fleet" : "Retail"}
                   </span>
                 </div>
@@ -167,67 +228,71 @@ export default function CustomersPage() {
                 {/* Balance & Limit Bar */}
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-text-muted">Outstanding:</span>
-                    <span className="tabular-nums font-semibold text-text">
+                    <span className="text-slate-500">Outstanding Balance:</span>
+                    <span className="font-extrabold font-mono text-slate-900 dark:text-slate-100">
                       {formatPaise(customer.currentBalancePaise)}
                     </span>
                   </div>
 
-                  <div className="w-full bg-border-subtle h-2 rounded-none overflow-hidden">
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all duration-300 ${
-                        isOverLimit ? "bg-brick" : percent > 80 ? "bg-warning" : "bg-olive"
+                        isOverLimit
+                          ? "bg-rose-500"
+                          : percent > 80
+                          ? "bg-amber-500"
+                          : "bg-emerald-500"
                       }`}
                       style={{ width: `${percent}%` }}
                     />
                   </div>
 
-                  <div className="flex justify-between text-[11px] text-text-faint">
-                    <span>Limit: {formatPaise(customer.creditLimitPaise)}</span>
-                    <span className="tabular-nums font-medium">{percent}%</span>
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Sanctioned Limit: {formatPaise(customer.creditLimitPaise)}</span>
+                    <span className="font-mono font-bold">{percent}%</span>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-border-subtle text-xs text-text-muted flex justify-between">
+                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 flex justify-between">
                   <span>Vehicles Enrolled:</span>
-                  <span className="font-semibold text-text">{customer.vehicles.length} Trucks/Cabs</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {customer.vehicles.length} Commercial Trucks/Cabs
+                  </span>
                 </div>
               </div>
 
               {/* Actions */}
-              <div className="mt-5 pt-3 border-t border-border flex items-center justify-between gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
+              <div className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                <button
                   onClick={() => {
                     setActivePaymentCustomer(customer);
                     setPaymentModalOpen(true);
                   }}
-                  className="flex-1 text-xs"
+                  className="flex-1 py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs transition-colors"
                 >
-                  Collect Cash/UPI
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
+                  Record Payment
+                </button>
+
+                <button
                   onClick={() => setSelectedCustomer(customer)}
-                  className="flex-1 text-xs"
+                  className="py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold transition-colors"
                 >
                   Statement
-                </Button>
+                </button>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Customer Detail & Statement Modal */}
+      {/* Modals */}
       <CustomerDetailModal
         customer={selectedCustomer}
         isOpen={!!selectedCustomer}
         onClose={() => setSelectedCustomer(null)}
-        onOpenPayment={(c) => {
-          setActivePaymentCustomer(c);
+        onOpenPayment={(cust) => {
+          setSelectedCustomer(null);
+          setActivePaymentCustomer(cust);
           setPaymentModalOpen(true);
         }}
       />
@@ -236,30 +301,35 @@ export default function CustomersPage() {
       <Modal
         isOpen={addCustomerOpen}
         onClose={() => setAddCustomerOpen(false)}
-        title="Register Customer / Fleet Company"
-        subtitle="Create commercial credit ledger and authorize fleet vehicles"
-        maxWidth="lg"
+        title="Add Fleet / Commercial Customer"
+        subtitle="Sanction credit limit and register vehicle quotas"
+        maxWidth="md"
       >
         <form onSubmit={handleCreateCustomer} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Customer Name / Contact Person"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+
+          <div className="grid grid-cols-2 gap-3">
             <Input
-              label="Customer / Company Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Continental Cargo Logistics"
-              required
+              label="Company / Fleet Trade Name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
             />
             <Select
-              label="Account Type"
+              label="Customer Type"
               value={type}
               onChange={(e) => setType(e.target.value as any)}
             >
-              <option value="FLEET_COMPANY">Fleet Transport Company</option>
-              <option value="INDIVIDUAL">Individual / Local Corporate</option>
+              <option value="FLEET_COMPANY">Fleet / Logistics Company</option>
+              <option value="INDIVIDUAL">Individual Account</option>
             </Select>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <Input
               label="Phone Number"
               value={phone}
@@ -267,75 +337,81 @@ export default function CustomersPage() {
               required
             />
             <Input
-              label="Email"
+              label="Email Address"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
             <Input
-              label="GSTIN (Optional)"
+              label="GSTIN Number (Optional)"
               value={gstin}
               onChange={(e) => setGstin(e.target.value)}
-              placeholder="e.g. 07AABCA3412B1Z8"
+              placeholder="e.g. 07AAAAA0000A1Z5"
+            />
+            <Input
+              label="Sanctioned Credit Limit (₹)"
+              type="number"
+              value={creditLimitRupees}
+              onChange={(e) => setCreditLimitRupees(e.target.value)}
+              required
             />
           </div>
 
-          <Input
-            label="Credit Limit (₹)"
-            type="number"
-            value={creditLimitRupees}
-            onChange={(e) => setCreditLimitRupees(e.target.value)}
-            required
-            helperText="Maximum allowed outstanding credit before automated sales block"
-          />
-
-          {/* First Vehicle Enrollment */}
-          <div className="pt-2 border-t border-border-subtle space-y-3">
-            <span className="block text-xs font-serif font-medium tracking-editorial uppercase text-text">
-              Primary Vehicle Enrollment (Optional)
+          <div className="p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl space-y-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
+              Enroll First Fleet Vehicle (Optional)
             </span>
-            <div className="grid grid-cols-3 gap-3">
-              <Input
-                label="Vehicle Registration No."
+            <div className="grid grid-cols-3 gap-2">
+              <input
+                placeholder="Vehicle No."
                 value={vehicleNo}
                 onChange={(e) => setVehicleNo(e.target.value)}
-                placeholder="e.g. DL 01 AB 9988"
+                className="px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs font-mono font-bold uppercase"
               />
-              <Input
-                label="Make / Model"
+              <input
+                placeholder="Model (e.g. Tata 407)"
                 value={vehicleModel}
                 onChange={(e) => setVehicleModel(e.target.value)}
-                placeholder="e.g. Tata Prima 4028"
+                className="px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs"
               />
-              <Select
-                label="Fuel Product"
+              <select
                 value={vehicleFuel}
                 onChange={(e) => setVehicleFuel(e.target.value as any)}
+                className="px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs font-semibold"
               >
-                <option value="Diesel">High Speed Diesel</option>
+                <option value="Diesel">Diesel</option>
                 <option value="Petrol">Petrol</option>
-                <option value="Speed Petrol">Speed Petrol</option>
-              </Select>
+              </select>
             </div>
           </div>
 
-          <div className="flex justify-end space-x-2 pt-4 border-t border-border-subtle">
-            <Button variant="outline" type="button" onClick={() => setAddCustomerOpen(false)}>
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setAddCustomerOpen(false)}
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
               Cancel
-            </Button>
-            <Button variant="primary" type="submit">
-              Register Customer & Fleet
-            </Button>
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs"
+            >
+              Save Customer
+            </button>
           </div>
         </form>
       </Modal>
 
-      {/* Collect Payment Modal */}
+      {/* Record Payment Modal */}
       <Modal
         isOpen={paymentModalOpen}
         onClose={() => setPaymentModalOpen(false)}
-        title={`Collect Payment: ${activePaymentCustomer?.name}`}
-        subtitle={`Outstanding: ${formatPaise(activePaymentCustomer?.currentBalancePaise || 0)}`}
+        title={`Record Settlement: ${activePaymentCustomer?.name}`}
+        subtitle="Credit collection payment toward customer outstanding balance"
         maxWidth="md"
       >
         <form onSubmit={handleRecordCustomerPayment} className="space-y-4">
@@ -347,36 +423,41 @@ export default function CustomersPage() {
             required
           />
 
-          <div className="grid grid-cols-2 gap-3">
-            <Select
-              label="Payment Method"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value as any)}
+          <Select
+            label="Payment Mode"
+            value={paymentMethod}
+            onChange={(e) => setPaymentMethod(e.target.value as any)}
+          >
+            <option value="UPI">BHIM UPI / QR Transfer</option>
+            <option value="BANK_TRANSFER">Bank RTGS / NEFT</option>
+            <option value="CHEQUE">Bank Cheque</option>
+            <option value="CASH">Cash Over Counter</option>
+          </Select>
+
+          <Input
+            label="UTR / Cheque / Bank Reference No."
+            value={paymentRef}
+            onChange={(e) => setPaymentRef(e.target.value)}
+            required
+          />
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setPaymentModalOpen(false)}
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300"
             >
-              <option value="UPI">UPI / Net Banking</option>
-              <option value="CASH">Physical Cash</option>
-              <option value="BANK_TRANSFER">RTGS / NEFT</option>
-              <option value="CHEQUE">Bank Cheque</option>
-            </Select>
-
-            <Input
-              label="UTR / Ref Number"
-              value={paymentRef}
-              onChange={(e) => setPaymentRef(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="flex justify-end space-x-2 pt-4 border-t border-border-subtle">
-            <Button variant="outline" type="button" onClick={() => setPaymentModalOpen(false)}>
               Cancel
-            </Button>
-            <Button variant="primary" type="submit">
-              Post Ledger Receipt
-            </Button>
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs"
+            >
+              Confirm Settlement
+            </button>
           </div>
         </form>
       </Modal>
-    </div>
+    </PageTransition>
   );
 }

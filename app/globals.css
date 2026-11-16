@@ -3,41 +3,41 @@
 @tailwind utilities;
 
 :root {
-  /* Light Theme - Warm Ivory background, Charcoal text, Olive for actions */
-  --color-bg: #F3F0E8;
-  --color-card: #FAF8F4;
-  --color-card-subtle: #EBE6DA;
-  --color-border: #D8D2C2;
-  --color-border-subtle: #E6E1D4;
-  --color-text: #1E201C;
-  --color-text-muted: #676B61;
-  --color-text-faint: #989C91;
-  --color-accent: #737B54;
-  --color-accent-hover: #5F6644;
-  --color-accent-brass: #B69A63;
-  --color-danger: #9E473D;
-  --color-warning: #B69A63;
-  --color-success: #737B54;
-  --color-selection: #E5DFC8;
+  /* Default Theme: LIGHT (LogiVenture-inspired clean, friendly, vibrant) */
+  --color-bg: #F6F7FB;
+  --color-card: #FFFFFF;
+  --color-card-subtle: #F1F4FA;
+  --color-border: #E2E8F0;
+  --color-border-subtle: #EDF2F7;
+  --color-text: #0F172A;
+  --color-text-muted: #64748B;
+  --color-text-faint: #94A3B8;
+  --color-primary: #F37021; /* IndianOil Saffron */
+  --color-primary-hover: #D65A10;
+  --color-secondary: #1D3F8F; /* IndianOil Blue */
+  --color-danger: #DC2626;
+  --color-warning: #E0A100;
+  --color-success: #1E9E5A;
+  --color-selection: #FED7AA;
 }
 
 .dark {
-  /* Dark Theme - Deep Charcoal background, Ivory text, Brass for highlights */
-  --color-bg: #171916;
-  --color-card: #20231E;
-  --color-card-subtle: #292D26;
-  --color-border: #31362D;
-  --color-border-subtle: #242821;
-  --color-text: #F3F0E8;
-  --color-text-muted: #A3A79B;
-  --color-text-faint: #63675C;
-  --color-accent: #B69A63;
-  --color-accent-hover: #C9B07D;
-  --color-accent-brass: #B69A63;
-  --color-danger: #BD584C;
-  --color-warning: #C7AD79;
-  --color-success: #8A9367;
-  --color-selection: #33382D;
+  /* Dark Theme */
+  --color-bg: #0B1120;
+  --color-card: #151F32;
+  --color-card-subtle: #1C2942;
+  --color-border: #243552;
+  --color-border-subtle: #1A2840;
+  --color-text: #F8FAFC;
+  --color-text-muted: #94A3B8;
+  --color-text-faint: #64748B;
+  --color-primary: #F37021;
+  --color-primary-hover: #FB923C;
+  --color-secondary: #3B82F6;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+  --color-success: #10B981;
+  --color-selection: #C2410C;
 }
 
 * {
@@ -51,24 +51,22 @@ body {
   padding: 0;
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: var(--font-manrope), sans-serif;
+  font-family: var(--font-body), sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 
-/* Tabular nums for all numbers */
+h1, h2, h3, h4, h5, h6, .font-heading {
+  font-family: var(--font-heading), sans-serif;
+}
+
 .tabular-nums,
 [data-tabular-nums] {
   font-variant-numeric: tabular-nums;
 }
 
-/* Headings with Cormorant Garamond */
-h1, h2, h3, .font-serif {
-  font-family: var(--font-cormorant), Georgia, serif;
-}
-
-/* Custom scrollbars */
+/* Custom modern scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -78,7 +76,7 @@ h1, h2, h3, .font-serif {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
-  border-radius: 2px;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);

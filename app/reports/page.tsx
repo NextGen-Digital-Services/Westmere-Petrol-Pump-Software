@@ -129,7 +129,7 @@ export default function ReportsPage() {
           <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
             Audit Ready Business Intelligence
           </span>
-          <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+          <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
             Reports & Financial Statements
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -199,7 +199,7 @@ export default function ReportsPage() {
       <div className="bg-card border border-border rounded-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
           <div>
-            <h3 className="text-base font-serif font-medium tracking-editorial text-text">
+            <h3 className="text-base font-heading font-bold text-text">
               {reportTitle}
             </h3>
             <p className="text-xs text-text-muted mt-0.5">{reportSubtitle}</p>

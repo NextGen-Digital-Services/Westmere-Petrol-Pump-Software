@@ -56,14 +56,14 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Dialog Window */}
       <div
         className={cn(
-          "relative w-full bg-card border border-border shadow-raised rounded-sm overflow-hidden z-10 flex flex-col max-h-[90vh]",
+          "relative w-full bg-card border border-border shadow-raised rounded-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]",
           maxWidthClass
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle bg-card">
           <div>
-            <h2 className="text-lg font-serif font-medium tracking-editorial text-text">
+            <h2 className="text-lg font-heading font-bold tracking-tight text-text">
               {title}
             </h2>
             {subtitle && <p className="text-xs text-text-muted mt-0.5">{subtitle}</p>}

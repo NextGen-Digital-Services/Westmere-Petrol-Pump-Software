@@ -5,12 +5,25 @@ import { usePetroStore } from "@/store/usePetroStore";
 import { Shift } from "@/types";
 import { CloseShiftModal } from "@/components/shifts/CloseShiftModal";
 import { Modal } from "@/components/ui/Modal";
-import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
+import { PageTransition } from "@/components/animations/PageTransition";
+import { LivePulseBadge } from "@/components/animations/LivePulseBadge";
 import { formatPaise, formatDateTime, formatDate } from "@/lib/format";
 import { hasPermission } from "@/lib/auth";
 import { generatePdfReport } from "@/lib/export/exportPdf";
-import { Clock, Plus, CheckCircle, AlertTriangle, Printer, Lock } from "lucide-react";
+import { BRAND_COLORS } from "@/lib/theme";
+import {
+  Clock,
+  Plus,
+  CheckCircle2,
+  AlertTriangle,
+  Printer,
+  Lock,
+  Sparkles,
+  ShieldCheck,
+  Banknote,
+  Receipt,
+} from "lucide-react";
 
 export default function ShiftsPage() {
   const store = usePetroStore();
@@ -26,6 +39,12 @@ export default function ShiftsPage() {
 
   const canApprove = hasPermission(store.activeRole, "approve_shift_variance");
   const runningShift = store.shifts.find((s) => s.status === "OPEN");
+
+  // Running shift live sales
+  const runningShiftSales = runningShift
+    ? store.sales.filter((s) => s.shiftId === runningShift.id && s.status === "COMPLETED")
+    : [];
+  const runningShiftRevenue = runningShiftSales.reduce((acc, s) => acc + s.netAmountPaise, 0);
 
   const handleOpenShift = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +63,6 @@ export default function ShiftsPage() {
 
   const handlePrintShiftReport = (shift: Shift) => {
     const shiftSales = store.sales.filter((s) => s.shiftId === shift.id);
-    const totalRev = shiftSales.reduce((acc, s) => acc + s.netAmountPaise, 0);
 
     const headers = ["Invoice", "Time", "Fuel", "Volume (L)", "Amount", "Method"];
     const rows = shiftSales.map((s) => [
@@ -58,7 +76,11 @@ export default function ShiftsPage() {
 
     generatePdfReport(
       `Shift Closing Settlement (${shift.code})`,
-      `Shift: ${shift.name} | Opened by: ${shift.openedBy} | Expected Cash: ${formatPaise(shift.expectedCashPaise || 0)} | Actual Cash: ${formatPaise(shift.closingCashPaise || 0)} | Variance: ${formatPaise(shift.cashVariancePaise || 0)}`,
+      `Shift: ${shift.name} | Opened by: ${shift.openedBy} | Expected Cash: ${formatPaise(
+        shift.expectedCashPaise || 0
+      )} | Actual Cash: ${formatPaise(shift.closingCashPaise || 0)} | Variance: ${formatPaise(
+        shift.cashVariancePaise || 0
+      )}`,
       headers,
       rows,
       store.station.name
@@ -66,175 +88,187 @@ export default function ShiftsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <PageTransition className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-slate-200/90 dark:border-slate-800">
         <div>
-          <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
+          <span className="text-[10px] tracking-wider uppercase text-amber-600 dark:text-amber-500 font-bold">
             Shift Operations & Cashbox Reconciliations
           </span>
-          <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
-            Shift Management
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-heading text-slate-900 dark:text-slate-100 mt-1">
+            Shift Management & Safe Handover
           </h1>
-          <p className="text-xs text-text-muted mt-1">
-            Opening cash floats, meter handovers, strict isolated tender settlement, and managerial discrepancy approval.
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Opening cash floats, meter handovers, denomination sheets, and managerial variance approvals.
           </p>
         </div>
 
         {!runningShift && (
-          <Button
-            variant="primary"
-            size="sm"
+          <button
             onClick={() => setOpenShiftModal(true)}
-            icon={<Plus className="w-3.5 h-3.5" />}
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white inline-flex items-center gap-1.5 shadow-sm shadow-amber-500/20 transition-all"
           >
-            Start New Shift
-          </Button>
+            <Plus className="w-4 h-4" />
+            <span>Start New Shift</span>
+          </button>
         )}
       </div>
 
       {/* Active Running Shift Banner */}
       {runningShift ? (
-        <div className="bg-card border-2 border-accent/40 rounded-sm p-6 relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border-2 border-amber-500/50 rounded-2xl p-6 shadow-sm relative overflow-hidden">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <div className="flex items-center space-x-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-olive animate-pulse" />
-                <span className="text-[10px] tracking-caps uppercase text-accent font-bold">
-                  Active Running Shift ({runningShift.name})
+                <LivePulseBadge label="ACTIVE SHIFT" variant="saffron" size="sm" />
+                <span className="text-slate-300 dark:text-slate-700 text-xs">•</span>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 font-mono">
+                  {runningShift.code} ({runningShift.name})
                 </span>
-                <span className="text-text-faint text-xs">•</span>
-                <span className="text-xs text-text-muted font-medium">{runningShift.code}</span>
               </div>
-              <h2 className="text-2xl font-serif font-medium text-text mt-1">
-                Started by {runningShift.openedBy} at {formatDateTime(runningShift.openedAt)}
+
+              <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-slate-900 dark:text-slate-100 mt-2">
+                Shift Handover by {runningShift.openedBy}
               </h2>
-              <p className="text-xs text-text-muted mt-1">
-                Opening Cash Float: <strong className="text-text font-semibold">{formatPaise(runningShift.openingCashPaise)}</strong>
-                {runningShift.notes && ` • Notes: ${runningShift.notes}`}
-              </p>
+
+              <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-slate-600 dark:text-slate-400">
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  Opened: {formatDateTime(runningShift.openedAt)}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Banknote className="w-3.5 h-3.5 text-emerald-600" />
+                  Opening Float: <strong className="font-mono text-slate-900 dark:text-slate-100">{formatPaise(runningShift.openingCashPaise)}</strong>
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Receipt className="w-3.5 h-3.5 text-amber-500" />
+                  Current Billed: <strong className="font-mono text-slate-900 dark:text-slate-100">{formatPaise(runningShiftRevenue)}</strong> ({runningShiftSales.length} bills)
+                </span>
+              </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <Button
-                variant="primary"
-                size="md"
+            <div className="flex items-center space-x-3 shrink-0">
+              <button
                 onClick={() => setSelectedShiftForClose(runningShift)}
-                className="bg-accent text-bg hover:opacity-90 font-semibold"
+                className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all flex items-center gap-2"
               >
-                Close & Reconcile Shift
-              </Button>
+                <Lock className="w-3.5 h-3.5" />
+                <span>Close & Reconcile Shift</span>
+              </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="p-6 bg-card border border-dashed border-border rounded-sm text-center">
-          <Clock className="w-6 h-6 text-text-faint mx-auto mb-2" />
-          <h3 className="text-sm font-medium text-text">No Shift Currently Open</h3>
-          <p className="text-xs text-text-muted mt-0.5">
-            Forecourt sales require an active operational shift to bill and assign receipts.
+        <div className="p-8 bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl text-center">
+          <Clock className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">No Shift Currently Open</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+            Forecourt sales require an active operational shift to bill and assign receipts to pump operators.
           </p>
-          <Button
-            variant="outline"
-            size="sm"
+          <button
             onClick={() => setOpenShiftModal(true)}
-            className="mt-4"
+            className="mt-4 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-xs"
           >
             Open Next Shift
-          </Button>
+          </button>
         </div>
       )}
 
       {/* Shift History & Audit Table */}
-      <div className="bg-card border border-border rounded-sm overflow-hidden mt-6">
-        <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
-          <h3 className="text-base font-serif font-medium tracking-editorial text-text">
-            Historical Shift Settlement Log
-          </h3>
-          <span className="text-xs text-text-muted">{store.shifts.length} recorded shifts</span>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm mt-6">
+        <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4 text-blue-600" />
+            <h3 className="text-sm font-bold font-heading text-slate-900 dark:text-slate-100">
+              Historical Shift Settlement & Denomination Log
+            </h3>
+          </div>
+          <span className="text-xs text-slate-400 font-mono">
+            {store.shifts.length} shift handovers recorded
+          </span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-card-subtle border-b border-border">
+            <thead className="bg-slate-50 dark:bg-slate-850 border-b border-slate-100 dark:border-slate-800">
               <tr>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted">Shift Code</th>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted">Schedule</th>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted">Opened By</th>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted text-right">Opening Float</th>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted text-right">Expected Cash</th>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted text-right">Actual Cash</th>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted text-right">Variance</th>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted">Status</th>
-                <th className="p-3 text-[10px] font-semibold tracking-caps uppercase text-text-muted text-center">Actions</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500">Shift Code</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500">Schedule</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500">Opened By</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500 text-right">Opening Float</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500 text-right">Expected Cash</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500 text-right">Actual Counted</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500 text-right">Cash Variance</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500">Status</th>
+                <th className="p-3.5 font-bold uppercase tracking-wider text-[10px] text-slate-500 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {store.shifts.map((shift) => {
                 const variance = shift.cashVariancePaise || 0;
                 const hasVariance = Math.abs(variance) > 0;
-                const isPendingApproval = shift.status === "CLOSED" && hasVariance;
+                const isPendingApproval = shift.status === "CLOSED" && hasVariance && !shift.varianceApproved;
 
                 return (
-                  <tr key={shift.id} className="hover:bg-card-subtle/40">
-                    <td className="p-3 font-semibold text-text">{shift.code}</td>
-                    <td className="p-3 text-text-muted">
+                  <tr key={shift.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+                    <td className="p-3.5 font-bold font-mono text-slate-900 dark:text-slate-100">{shift.code}</td>
+                    <td className="p-3.5 text-slate-600 dark:text-slate-400">
                       {shift.name} ({formatDate(shift.date, "dd MMM")})
                     </td>
-                    <td className="p-3 text-text-muted">{shift.openedBy}</td>
-                    <td className="p-3 text-right tabular-nums text-text-muted">
+                    <td className="p-3.5 text-slate-600 dark:text-slate-400">{shift.openedBy}</td>
+                    <td className="p-3.5 text-right font-mono text-slate-600 dark:text-slate-400">
                       {formatPaise(shift.openingCashPaise)}
                     </td>
-                    <td className="p-3 text-right tabular-nums text-text-muted">
+                    <td className="p-3.5 text-right font-mono text-slate-600 dark:text-slate-400">
                       {shift.expectedCashPaise !== undefined ? formatPaise(shift.expectedCashPaise) : "Running"}
                     </td>
-                    <td className="p-3 text-right tabular-nums text-text">
+                    <td className="p-3.5 text-right font-mono font-bold text-slate-900 dark:text-slate-100">
                       {shift.closingCashPaise !== undefined ? formatPaise(shift.closingCashPaise) : "—"}
                     </td>
                     <td
-                      className={`p-3 text-right tabular-nums font-semibold ${
+                      className={`p-3.5 text-right font-mono font-extrabold ${
                         variance === 0
-                          ? "text-olive"
+                          ? "text-emerald-600"
                           : Math.abs(variance) > 50000
-                          ? "text-brick"
-                          : "text-warning"
+                          ? "text-rose-600"
+                          : "text-amber-600"
                       }`}
                     >
                       {shift.closingCashPaise !== undefined
                         ? `${variance >= 0 ? "+" : ""}${formatPaise(variance)}`
                         : "—"}
                     </td>
-                    <td className="p-3">
+                    <td className="p-3.5">
                       <span
-                        className={`inline-block px-2 py-0.5 text-[10px] tracking-caps uppercase font-semibold border rounded-sm ${
+                        className={`inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
                           shift.status === "OPEN"
-                            ? "bg-accent/15 text-accent border-accent/30"
-                            : shift.status === "LOCKED"
-                            ? "bg-card text-text-muted border-border"
-                            : "bg-brick/15 text-brick border-brick/30"
+                            ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400"
+                            : isPendingApproval
+                            ? "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950 dark:text-rose-400"
+                            : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400"
                         }`}
                       >
-                        {shift.status === "CLOSED" ? "Needs Approval" : shift.status}
+                        {isPendingApproval ? "Needs Sign-off" : shift.status === "LOCKED" ? "Reconciled" : shift.status}
                       </span>
                     </td>
-                    <td className="p-3 text-center space-x-2">
-                      {isPendingApproval && canApprove && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setApproveShiftId(shift.id)}
-                          className="h-6 text-[10px] px-2 text-brass border-brass/40 hover:bg-brass/10"
-                        >
-                          Approve
-                        </Button>
-                      )}
+                    <td className="p-3.5 text-center space-x-2">
                       <button
                         onClick={() => handlePrintShiftReport(shift)}
-                        className="p-1 text-text-muted hover:text-text rounded-sm transition-colors"
-                        title="Print / Export Shift Report"
+                        className="p-1.5 text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        title="Print / Export Shift PDF"
                       >
                         <Printer className="w-3.5 h-3.5 inline" />
                       </button>
+
+                      {isPendingApproval && canApprove && (
+                        <button
+                          onClick={() => setApproveShiftId(shift.id)}
+                          className="px-2.5 py-1 text-[11px] font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors inline-flex items-center gap-1 shadow-2xs"
+                        >
+                          <ShieldCheck className="w-3 h-3" />
+                          <span>Approve</span>
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );
@@ -244,7 +278,7 @@ export default function ShiftsPage() {
         </div>
       </div>
 
-      {/* Close Shift Modal */}
+      {/* Close Shift Modal with Denomination Sheet */}
       <CloseShiftModal
         shift={selectedShiftForClose}
         isOpen={!!selectedShiftForClose}
@@ -255,8 +289,8 @@ export default function ShiftsPage() {
       <Modal
         isOpen={openShiftModal}
         onClose={() => setOpenShiftModal(false)}
-        title="Open Station Shift"
-        subtitle="Specify shift schedule and starting cash till float"
+        title="Open Forecourt Shift"
+        subtitle="Initialize cash float and unlock nozzles for fueling sales"
         maxWidth="md"
       >
         <form onSubmit={handleOpenShift} className="space-y-4">
@@ -276,57 +310,81 @@ export default function ShiftsPage() {
             value={openingCash}
             onChange={(e) => setOpeningCash(e.target.value)}
             required
-            helperText="Counted currency placed into station drawer"
           />
 
-          <Input
-            label="Shift Notes"
-            value={shiftNotes}
-            onChange={(e) => setShiftNotes(e.target.value)}
-            placeholder="e.g. Island A & B assigned to morning operators"
-          />
+          <div>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              Handover Remarks / Notes
+            </label>
+            <textarea
+              rows={2}
+              value={shiftNotes}
+              onChange={(e) => setShiftNotes(e.target.value)}
+              placeholder="e.g. Starting float counted & verified from safe till"
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-100"
+            />
+          </div>
 
-          <div className="flex justify-end space-x-2 pt-4 border-t border-border-subtle">
-            <Button variant="outline" type="button" onClick={() => setOpenShiftModal(false)}>
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setOpenShiftModal(false)}
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
               Cancel
-            </Button>
-            <Button variant="primary" type="submit">
-              Confirm & Open Shift
-            </Button>
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs"
+            >
+              Start Shift Operations
+            </button>
           </div>
         </form>
       </Modal>
 
-      {/* Approve Shift Variance Modal */}
+      {/* Manager Variance Approval Modal */}
       <Modal
-        isOpen={!!approveShiftId}
+        isOpen={Boolean(approveShiftId)}
         onClose={() => setApproveShiftId(null)}
-        title="Owner / General Manager Variance Approval"
-        subtitle="Review cash discrepancy and lock shift record permanently"
+        title="Owner / GM Variance Approval"
+        subtitle="Sign off on shift cash discrepancy for financial ledger closing"
         maxWidth="md"
       >
         <form onSubmit={handleApproveVariance} className="space-y-4">
-          <p className="text-xs text-text-muted leading-relaxed">
-            Approving this discrepancy marks the shift as <strong>LOCKED</strong> and updates station reconciliation audits.
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            Authorizing this variance confirms managerial review of dispenser meters against actual cash counted in the safe till.
           </p>
-
-          <Input
-            label="Approval Comments"
-            value={approvalNotes}
-            onChange={(e) => setApprovalNotes(e.target.value)}
-            placeholder="e.g. Small denomination variance verified against forecourt CCTV"
-          />
-
-          <div className="flex justify-end space-x-2 pt-4 border-t border-border-subtle">
-            <Button variant="outline" type="button" onClick={() => setApproveShiftId(null)}>
+          <div>
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+              Approval Justification Note
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={approvalNotes}
+              onChange={(e) => setApprovalNotes(e.target.value)}
+              placeholder="e.g. Reviewed shift audit: variance within normal forecourt coin tolerance"
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-100"
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={() => setApproveShiftId(null)}
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300"
+            >
               Cancel
-            </Button>
-            <Button variant="danger" type="submit">
-              Approve & Lock Shift
-            </Button>
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs"
+            >
+              Authorize & Close Variance
+            </button>
           </div>
         </form>
       </Modal>
-    </div>
+    </PageTransition>
   );
 }

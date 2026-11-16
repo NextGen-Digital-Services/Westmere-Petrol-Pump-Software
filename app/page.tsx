@@ -2,9 +2,12 @@
 
 import React, { useState } from "react";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { StationDailyTimeline } from "@/components/dashboard/StationDailyTimeline";
+import { NeedsAttentionPanel } from "@/components/dashboard/NeedsAttentionPanel";
 import { DashboardMetrics } from "@/components/dashboard/DashboardMetrics";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
 import { QuickActionModals } from "@/components/dashboard/QuickActionModals";
+import { PageTransition } from "@/components/animations/PageTransition";
 
 export default function DashboardPage() {
   const [shiftModalOpen, setShiftModalOpen] = useState(false);
@@ -14,7 +17,7 @@ export default function DashboardPage() {
   const [reportModalOpen, setReportModalOpen] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <PageTransition className="space-y-6">
       {/* Editorial Header with Quick Actions */}
       <DashboardHeader
         onOpenNewShift={() => setShiftModalOpen(true)}
@@ -24,7 +27,13 @@ export default function DashboardPage() {
         onOpenDailyReport={() => setReportModalOpen(true)}
       />
 
-      {/* Primary KPI Metrics & Gauges */}
+      {/* "Today at the Station" 7-Step Operational Timeline */}
+      <StationDailyTimeline />
+
+      {/* Smart Needs Attention Panel (Alerts, Pending Approvals, Stamping) */}
+      <NeedsAttentionPanel />
+
+      {/* Primary KPI Metrics & Underground Tank Rack */}
       <DashboardMetrics />
 
       {/* Analytics Charts & Trends */}
@@ -43,6 +52,6 @@ export default function DashboardPage() {
         reportModalOpen={reportModalOpen}
         onCloseReportModal={() => setReportModalOpen(false)}
       />
-    </div>
+    </PageTransition>
   );
 }

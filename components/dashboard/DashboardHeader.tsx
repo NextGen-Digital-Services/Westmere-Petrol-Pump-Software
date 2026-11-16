@@ -1,10 +1,19 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { usePetroStore } from "@/store/usePetroStore";
-import { Button } from "@/components/ui/Button";
 import { formatDate } from "@/lib/format";
-import { Plus, Clock, Truck, Wallet, FileText, CreditCard } from "lucide-react";
+import {
+  Clock,
+  Truck,
+  Wallet,
+  FileText,
+  CreditCard,
+  Receipt,
+  Gauge,
+  Sparkles,
+} from "lucide-react";
 
 interface DashboardHeaderProps {
   onOpenNewShift: () => void;
@@ -21,73 +30,74 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onOpenRecordPayment,
   onOpenDailyReport,
 }) => {
+  const router = useRouter();
   const { station, shifts } = usePetroStore();
   const runningShift = shifts.find((s) => s.status === "OPEN");
 
   return (
     <div className="space-y-4">
-      {/* Editorial Title Block */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-4 border-b border-border">
+      {/* Title & Quick Actions Row */}
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-4 border-b border-slate-200/90 dark:border-slate-800">
         <div>
-          <div className="flex items-center space-x-2 text-xs font-medium tracking-caps uppercase text-text-muted">
-            <span>{station.name}</span>
+          <div className="flex items-center space-x-2 text-xs font-bold tracking-wider uppercase text-slate-500 dark:text-slate-400">
+            <span>{station.oilCompany || "Indian Oil Corporation Limited"}</span>
             <span>•</span>
-            <span className="text-accent font-semibold">RO CODE: {station.roCode}</span>
+            <span className="text-amber-600 dark:text-amber-400 font-extrabold font-mono">
+              RO: {station.roCode}
+            </span>
           </div>
-          <h1 className="text-3xl lg:text-4xl font-serif font-light tracking-editorial text-text mt-1">
+
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-heading text-slate-900 dark:text-slate-100 mt-1">
             Station Executive Overview
           </h1>
-          <p className="text-xs text-text-muted mt-1">
-            Operational telemetry for {formatDate(new Date(), "EEEE, dd MMMM yyyy")}
+
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Forecourt operational telemetry for {formatDate(new Date(), "EEEE, dd MMMM yyyy")}
           </p>
         </div>
 
         {/* Quick Action Buttons */}
         <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
+          {/* Quick POS Billing */}
+          <button
+            onClick={() => router.push("/sales")}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white shadow-sm shadow-amber-500/20 inline-flex items-center gap-1.5 transition-all"
+          >
+            <Receipt className="w-4 h-4" />
+            <span>POS Billing</span>
+          </button>
+
+          <button
             onClick={onOpenNewShift}
-            icon={<Clock className="w-3.5 h-3.5" />}
+            className="px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 inline-flex items-center gap-1.5 transition-all shadow-xs"
           >
-            {runningShift ? "Active Shift" : "Start New Shift"}
-          </Button>
+            <Clock className="w-3.5 h-3.5 text-amber-500" />
+            <span>{runningShift ? "Active Shift" : "Start Shift"}</span>
+          </button>
 
-          <Button
-            variant="outline"
-            size="sm"
+          <button
             onClick={onOpenFuelPurchase}
-            icon={<Truck className="w-3.5 h-3.5" />}
+            className="px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 inline-flex items-center gap-1.5 transition-all shadow-xs"
           >
-            Record Purchase
-          </Button>
+            <Truck className="w-3.5 h-3.5 text-blue-600" />
+            <span>Receive Tanker</span>
+          </button>
 
-          <Button
-            variant="outline"
-            size="sm"
+          <button
             onClick={onOpenAddExpense}
-            icon={<Wallet className="w-3.5 h-3.5" />}
+            className="px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 inline-flex items-center gap-1.5 transition-all shadow-xs"
           >
-            Add Expense
-          </Button>
+            <Wallet className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Add Expense</span>
+          </button>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onOpenRecordPayment}
-            icon={<CreditCard className="w-3.5 h-3.5" />}
-          >
-            Record Payment
-          </Button>
-
-          <Button
-            variant="primary"
-            size="sm"
+          <button
             onClick={onOpenDailyReport}
-            icon={<FileText className="w-3.5 h-3.5" />}
+            className="px-3 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 inline-flex items-center gap-1.5 transition-all shadow-xs"
           >
-            Daily Report
-          </Button>
+            <FileText className="w-3.5 h-3.5 text-slate-500" />
+            <span>DSR Report</span>
+          </button>
         </div>
       </div>
     </div>

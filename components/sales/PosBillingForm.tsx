@@ -175,10 +175,10 @@ export const PosBillingForm: React.FC<PosBillingFormProps> = ({ onSaleCreated })
   };
 
   return (
-    <form onSubmit={handleSubmitSale} className="bg-card border border-border rounded-sm p-6 space-y-6">
+    <form onSubmit={handleSubmitSale} className="bg-card border border-border rounded-2xl p-6 space-y-6 shadow-xs">
       <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
         <div>
-          <h2 className="text-base font-serif font-medium tracking-editorial text-text">
+          <h2 className="text-base font-heading font-bold tracking-tight text-text">
             Fast POS Forecourt Billing Terminal
           </h2>
           <p className="text-xs text-text-muted mt-0.5">

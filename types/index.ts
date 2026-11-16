@@ -23,6 +23,7 @@ export interface Station {
   gstin?: string;
   vatTin?: string;
   currency: string;
+  logoUrl?: string; // Base64 uploaded official Indian Oil logo
 }
 
 export interface User {
@@ -182,6 +183,8 @@ export interface Shift {
   closingCashPaise?: number;
   expectedCashPaise?: number;
   cashVariancePaise?: number; // Actual cash - expected cash
+  variancePaise?: number;
+  varianceApproved?: boolean;
   notes?: string;
   varianceReason?: string;
 }
@@ -430,3 +433,104 @@ export interface StationSettings {
   simulatedNotificationEmail: boolean;
   demoMode: boolean;
 }
+
+export interface QualityCheck {
+  id: string;
+  tankId: string;
+  fuelType: FuelType;
+  date: string;
+  densityReported: number; // kg/m3 at 15C
+  temperatureC: number;
+  waterPasteResult: "PASS" | "FAIL";
+  filterPaperResult: "PASS" | "FAIL";
+  appearance: "CLEAR" | "HAZY" | "PARTICULATE";
+  status: "APPROVED" | "FLAGGED";
+  verifiedBy: string;
+  createdAt: string;
+  notes?: string;
+}
+
+export interface PumpTestEntry {
+  id: string;
+  nozzleId: string;
+  shiftId: string;
+  measureLitres: number; // 5.0 L standard measure
+  dispensedLitres: number;
+  returnedToTank: boolean;
+  tankId: string;
+  accuracyTolerancePercent: number;
+  passed: boolean;
+  testedBy: string;
+  createdAt: string;
+}
+
+export interface ComplianceDocument {
+  id: string;
+  title: string;
+  category: "PESO" | "FIRE_SAFETY" | "POLLUTION" | "WEIGHTS_MEASURES" | "TRADE_LICENCE" | "GST" | "INSURANCE";
+  documentNumber: string;
+  issuingAuthority: string;
+  issueDate: string;
+  expiryDate: string;
+  fileDataUrl?: string;
+  status: "VALID" | "EXPIRING_SOON" | "EXPIRED";
+  notes?: string;
+}
+
+export interface InspectionChecklist {
+  id: string;
+  type: "DAILY_OPENING" | "WEEKLY_SAFETY" | "MONTHLY_AUDIT";
+  date: string;
+  inspectorName: string;
+  items: { id: string; label: string; passed: boolean; note?: string }[];
+  signedOff: boolean;
+  createdAt: string;
+}
+
+export interface StationAsset {
+  id: string;
+  name: string;
+  category: "DISPENSER" | "TANK" | "GENERATOR" | "CCTV" | "FIRE_EQUIPMENT";
+  serialNumber: string;
+  installDate: string;
+  lastServiceDate: string;
+  nextServiceDue: string;
+  amcVendor: string;
+  amcContact: string;
+  status: "OPERATIONAL" | "NEEDS_SERVICE" | "BREAKDOWN";
+  tickets: { id: string; date: string; description: string; costPaise: number; status: string }[];
+}
+
+export interface LubricantProduct {
+  id: string;
+  sku: string;
+  name: string; // e.g. "Servo 4T 20W40"
+  grade: string;
+  packSizeLitres: number;
+  currentStockUnits: number;
+  reorderLevelUnits: number;
+  purchaseCostPaise: number;
+  salePricePaise: number;
+  gstRatePercent: number; // 18%
+}
+
+export interface DealerAccount {
+  balancePaise: number; // Positive = credit with IOCL
+  indentCreditLimitPaise: number;
+  lastIndentDate: string;
+  pendingIndentAmountPaise: number;
+  fundsRequiredTomorrowPaise: number;
+  recentRemittances: { date: string; utr: string; amountPaise: number; bank: string }[];
+}
+
+export interface CashDenominationSheet {
+  notes500: number;
+  notes200: number;
+  notes100: number;
+  notes50: number;
+  notes20: number;
+  notes10: number;
+  coins: number;
+  totalPaise: number;
+}
+

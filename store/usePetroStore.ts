@@ -28,6 +28,13 @@ import {
   AuditLog,
   Notification,
   StationSettings,
+  QualityCheck,
+  PumpTestEntry,
+  ComplianceDocument,
+  InspectionChecklist,
+  StationAsset,
+  LubricantProduct,
+  DealerAccount,
 } from "@/types";
 import {
   initialStation,
@@ -50,6 +57,13 @@ import {
   demoNotifications,
   demoAuditLogs,
   initialSettings,
+  demoQualityChecks,
+  demoPumpTests,
+  demoComplianceDocs,
+  demoInspectionChecklists,
+  demoStationAssets,
+  demoLubricants,
+  demoDealerAccount,
 } from "@/seed/demoData";
 import { generateEntityId } from "@/lib/format";
 
@@ -91,6 +105,15 @@ export interface PetroState {
   notifications: Notification[];
   auditLogs: AuditLog[];
   settings: StationSettings;
+
+  // v2 Retail Outlet Entities
+  qualityChecks: QualityCheck[];
+  pumpTests: PumpTestEntry[];
+  complianceDocs: ComplianceDocument[];
+  inspectionChecklists: InspectionChecklist[];
+  stationAssets: StationAsset[];
+  lubricants: LubricantProduct[];
+  dealerAccount: DealerAccount;
 
   // Actions
   setTheme: (theme: "light" | "dark") => void;
@@ -161,6 +184,22 @@ export interface PetroState {
   clearAllData: () => void;
   importDataJSON: (jsonString: string) => boolean;
   exportDataJSON: () => string;
+
+  // v2 Actions
+  addQualityCheck: (qc: Omit<QualityCheck, "id" | "createdAt">) => QualityCheck;
+  addPumpTest: (pt: Omit<PumpTestEntry, "id" | "createdAt">) => PumpTestEntry;
+  addComplianceDoc: (doc: Omit<ComplianceDocument, "id">) => ComplianceDocument;
+  updateComplianceDoc: (id: string, updates: Partial<ComplianceDocument>) => void;
+  signOffInspection: (id: string, inspectorName: string) => void;
+  updateStationAsset: (id: string, updates: Partial<StationAsset>) => void;
+  addAssetTicket: (assetId: string, ticket: { description: string; costPaise: number }) => void;
+  sellLubricant: (productId: string, units: number, customerId?: string, paymentMethod?: string) => void;
+  updateDealerAccount: (updates: Partial<DealerAccount>) => void;
+  setFuelPriceWithRevaluation: (
+    fuelType: FuelPrice["fuelType"],
+    salePricePaise: number,
+    notes?: string
+  ) => { oldPricePaise: number; newPricePaise: number; revaluationDeltaPaise: number };
 }
 
 export const usePetroStore = create<PetroState>()(
@@ -173,7 +212,7 @@ export const usePetroStore = create<PetroState>()(
       failedLoginAttempts: 0,
       isLockedOut: false,
       lockoutUntil: null,
-      theme: "dark",
+      theme: "light",
 
       station: initialStation,
       users: demoUsers,
@@ -201,6 +240,15 @@ export const usePetroStore = create<PetroState>()(
       notifications: demoNotifications,
       auditLogs: demoAuditLogs,
       settings: initialSettings,
+
+      // v2 Seed Data
+      qualityChecks: demoQualityChecks,
+      pumpTests: demoPumpTests,
+      complianceDocs: demoComplianceDocs,
+      inspectionChecklists: demoInspectionChecklists,
+      stationAssets: demoStationAssets,
+      lubricants: demoLubricants,
+      dealerAccount: demoDealerAccount,
 
       setTheme: (theme) => set({ theme }),
       toggleTheme: () => set((state) => ({ theme: state.theme === "dark" ? "light" : "dark" })),
@@ -383,6 +431,7 @@ export const usePetroStore = create<PetroState>()(
                   ...s,
                   status: "LOCKED",
                   approvedBy: get().currentUser?.name || "Owner",
+                  varianceApproved: true,
                   notes: notes ? `${s.notes || ""}; ${notes}` : s.notes,
                 }
               : s
@@ -1045,6 +1094,155 @@ export const usePetroStore = create<PetroState>()(
         }));
       },
 
+      addQualityCheck: (qcData) => {
+        const id = generateEntityId("QC");
+        const qc: QualityCheck = {
+          ...qcData,
+          id,
+          createdAt: new Date().toISOString(),
+        };
+        set((state) => ({ qualityChecks: [qc, ...state.qualityChecks] }));
+        get().addAuditLog({
+          userId: get().currentUser?.id || "SYS",
+          userName: get().currentUser?.name || "Staff",
+          userRole: get().activeRole,
+          action: "QUALITY_CHECK_LOG",
+          entity: "QualityCheck",
+          entityId: id,
+          description: `Logged daily fuel quality check for ${qc.fuelType}: Density ${qc.densityReported} kg/m3, Water Paste: ${qc.waterPasteResult}`,
+        });
+        return qc;
+      },
+
+      addPumpTest: (ptData) => {
+        const id = generateEntityId("PT");
+        const pt: PumpTestEntry = {
+          ...ptData,
+          id,
+          createdAt: new Date().toISOString(),
+        };
+        set((state) => ({ pumpTests: [pt, ...state.pumpTests] }));
+        get().addAuditLog({
+          userId: get().currentUser?.id || "SYS",
+          userName: get().currentUser?.name || "Staff",
+          userRole: get().activeRole,
+          action: "PUMP_TEST_MEASURE",
+          entity: "PumpTestEntry",
+          entityId: id,
+          description: `Recorded 5L measure test for Nozzle ${pt.nozzleId}. Dispensed: ${pt.dispensedLitres}L (Variance: ${pt.accuracyTolerancePercent}%). Return to tank: ${pt.returnedToTank}`,
+        });
+        return pt;
+      },
+
+      addComplianceDoc: (docData) => {
+        const id = generateEntityId("DOC");
+        const doc: ComplianceDocument = {
+          ...docData,
+          id,
+        };
+        set((state) => ({ complianceDocs: [doc, ...state.complianceDocs] }));
+        return doc;
+      },
+
+      updateComplianceDoc: (id, updates) => {
+        set((state) => ({
+          complianceDocs: state.complianceDocs.map((d) => (d.id === id ? { ...d, ...updates } : d)),
+        }));
+      },
+
+      signOffInspection: (id, inspectorName) => {
+        set((state) => ({
+          inspectionChecklists: state.inspectionChecklists.map((c) =>
+            c.id === id ? { ...c, signedOff: true, inspectorName } : c
+          ),
+        }));
+      },
+
+      updateStationAsset: (id, updates) => {
+        set((state) => ({
+          stationAssets: state.stationAssets.map((a) => (a.id === id ? { ...a, ...updates } : a)),
+        }));
+      },
+
+      addAssetTicket: (assetId, ticketData) => {
+        const ticketId = generateEntityId("TCK");
+        const newTicket = {
+          id: ticketId,
+          date: new Date().toISOString().split("T")[0],
+          description: ticketData.description,
+          costPaise: ticketData.costPaise,
+          status: "OPEN",
+        };
+        set((state) => ({
+          stationAssets: state.stationAssets.map((a) =>
+            a.id === assetId
+              ? {
+                  ...a,
+                  tickets: [newTicket, ...a.tickets],
+                  status: "NEEDS_SERVICE" as const,
+                }
+              : a
+          ),
+        }));
+      },
+
+      sellLubricant: (productId, units, customerId, paymentMethod = "CASH") => {
+        const prod = get().lubricants.find((l) => l.id === productId);
+        if (!prod || prod.currentStockUnits < units) return;
+
+        const totalAmountPaise = prod.salePricePaise * units;
+        set((state) => ({
+          lubricants: state.lubricants.map((l) =>
+            l.id === productId ? { ...l, currentStockUnits: l.currentStockUnits - units } : l
+          ),
+        }));
+
+        if (paymentMethod === "CASH") {
+          get().addCashbookEntry({
+            date: new Date().toISOString().split("T")[0],
+            entryType: "INFLOW",
+            source: "OTHER",
+            referenceId: productId,
+            description: `SERVO Lubricant Cash Sale: ${units}x ${prod.name}`,
+            amountPaise: totalAmountPaise,
+            balanceAfterPaise:
+              (get().cashbook[0]?.balanceAfterPaise || 0) + totalAmountPaise,
+          });
+        }
+      },
+
+      updateDealerAccount: (updates) => {
+        set((state) => ({
+          dealerAccount: { ...state.dealerAccount, ...updates },
+        }));
+      },
+
+      setFuelPriceWithRevaluation: (fuelType, salePricePaise, notes) => {
+        const currentPrices = get().fuelPrices;
+        const currentPriceObj = currentPrices.find((p) => p.fuelType === fuelType);
+        const oldPricePaise = currentPriceObj ? currentPriceObj.salePricePaise : salePricePaise;
+
+        const matchingTanks = get().tanks.filter((t) => t.fuelType === fuelType);
+        const currentStockLitres = matchingTanks.reduce((sum, t) => sum + t.currentStockLitres, 0);
+
+        const deltaPaisePerLitre = salePricePaise - oldPricePaise;
+        const revaluationDeltaPaise = Math.round(deltaPaisePerLitre * currentStockLitres);
+
+        get().setFuelPrice(fuelType, salePricePaise, notes);
+
+        get().addAuditLog({
+          userId: get().currentUser?.id || "SYS",
+          userName: get().currentUser?.name || "Owner",
+          userRole: get().activeRole,
+          action: "STOCK_REVALUATION",
+          entity: "TankStock",
+          entityId: fuelType,
+          description: `Daily 06:00 AM Price Revision: ${fuelType} shifted from ₹${(oldPricePaise / 100).toFixed(2)} to ₹${(salePricePaise / 100).toFixed(2)}/L. Total active stock ${Math.round(currentStockLitres)}L revalued by ${revaluationDeltaPaise >= 0 ? "+" : ""}₹${(revaluationDeltaPaise / 100).toFixed(2)}.`,
+        });
+
+        return { oldPricePaise, newPricePaise: salePricePaise, revaluationDeltaPaise };
+      },
+
       resetToDemoData: () => {
         set({
           station: initialStation,
@@ -1076,6 +1274,13 @@ export const usePetroStore = create<PetroState>()(
           activeRole: "Owner",
           currentUser: demoUsers[0],
           isLoggedIn: true,
+          qualityChecks: demoQualityChecks,
+          pumpTests: demoPumpTests,
+          complianceDocs: demoComplianceDocs,
+          inspectionChecklists: demoInspectionChecklists,
+          stationAssets: demoStationAssets,
+          lubricants: demoLubricants,
+          dealerAccount: demoDealerAccount,
         });
       },
 

@@ -87,9 +87,9 @@ export const InsightsModal: React.FC<InsightsModalProps> = ({ isOpen, onClose })
 
         {/* Query Result Card */}
         {result && (
-          <div className="border border-border rounded-sm bg-card-subtle p-5 space-y-4">
+          <div className="border border-border rounded-xl bg-card-subtle p-5 space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
-              <span className="text-xs font-serif font-medium tracking-editorial uppercase text-text-muted">
+              <span className="text-xs font-heading font-bold uppercase tracking-wider text-text-muted">
                 Insight Analysis
               </span>
               <span className="text-[10px] tracking-caps uppercase px-1.5 py-0.5 border border-border text-text-faint rounded-sm">

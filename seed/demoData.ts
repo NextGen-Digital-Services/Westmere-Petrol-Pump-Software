@@ -21,6 +21,13 @@ import {
   StationSettings,
   MeterReading,
   TankDip,
+  QualityCheck,
+  PumpTestEntry,
+  ComplianceDocument,
+  InspectionChecklist,
+  StationAsset,
+  LubricantProduct,
+  DealerAccount,
 } from "@/types";
 
 export const initialStation: Station = {
@@ -950,3 +957,340 @@ export const initialSettings: StationSettings = {
   simulatedNotificationEmail: true,
   demoMode: true,
 };
+
+export const demoQualityChecks: QualityCheck[] = [
+  {
+    id: "QC-2026-001",
+    tankId: "TNK-001",
+    fuelType: "Petrol",
+    date: "2026-11-16T06:15:00Z",
+    densityReported: 742.5,
+    temperatureC: 22.4,
+    waterPasteResult: "PASS",
+    filterPaperResult: "PASS",
+    appearance: "CLEAR",
+    status: "APPROVED",
+    verifiedBy: "Rajesh Nair (GM)",
+    notes: "Density within ±1.2 kg/m3 of invoice standard. Water paste showed 0mm pink discoloration.",
+    createdAt: "2026-11-16T06:20:00Z",
+  },
+  {
+    id: "QC-2026-002",
+    tankId: "TNK-002",
+    fuelType: "Diesel",
+    date: "2026-11-16T06:25:00Z",
+    densityReported: 832.1,
+    temperatureC: 21.8,
+    waterPasteResult: "PASS",
+    filterPaperResult: "PASS",
+    appearance: "CLEAR",
+    status: "APPROVED",
+    verifiedBy: "Rajesh Nair (GM)",
+    notes: "HSD sample clear and bright. Hydrometer reading verified at 15C conversion.",
+    createdAt: "2026-11-16T06:30:00Z",
+  },
+  {
+    id: "QC-2026-003",
+    tankId: "TNK-003",
+    fuelType: "Speed Petrol",
+    date: "2026-11-16T06:35:00Z",
+    densityReported: 746.0,
+    temperatureC: 22.0,
+    waterPasteResult: "PASS",
+    filterPaperResult: "PASS",
+    appearance: "CLEAR",
+    status: "APPROVED",
+    verifiedBy: "Rajesh Nair (GM)",
+    notes: "XP95 premium fuel test approved. No particulate haze detected.",
+    createdAt: "2026-11-16T06:40:00Z",
+  },
+];
+
+export const demoPumpTests: PumpTestEntry[] = [
+  {
+    id: "PT-2026-001",
+    nozzleId: "NZL-001",
+    shiftId: "SH-2026-0042",
+    measureLitres: 5.0,
+    dispensedLitres: 5.002,
+    returnedToTank: true,
+    tankId: "TNK-001",
+    accuracyTolerancePercent: 0.04,
+    passed: true,
+    testedBy: "Amit Verma (Shift Mgr)",
+    createdAt: "2026-11-16T06:45:00Z",
+  },
+  {
+    id: "PT-2026-002",
+    nozzleId: "NZL-002",
+    shiftId: "SH-2026-0042",
+    measureLitres: 5.0,
+    dispensedLitres: 4.996,
+    returnedToTank: true,
+    tankId: "TNK-002",
+    accuracyTolerancePercent: -0.08,
+    passed: true,
+    testedBy: "Amit Verma (Shift Mgr)",
+    createdAt: "2026-11-16T06:48:00Z",
+  },
+  {
+    id: "PT-2026-003",
+    nozzleId: "NZL-003",
+    shiftId: "SH-2026-0042",
+    measureLitres: 5.0,
+    dispensedLitres: 5.000,
+    returnedToTank: true,
+    tankId: "TNK-001",
+    accuracyTolerancePercent: 0.0,
+    passed: true,
+    testedBy: "Amit Verma (Shift Mgr)",
+    createdAt: "2026-11-16T06:51:00Z",
+  },
+  {
+    id: "PT-2026-004",
+    nozzleId: "NZL-004",
+    shiftId: "SH-2026-0042",
+    measureLitres: 5.0,
+    dispensedLitres: 5.005,
+    returnedToTank: true,
+    tankId: "TNK-002",
+    accuracyTolerancePercent: 0.1,
+    passed: true,
+    testedBy: "Amit Verma (Shift Mgr)",
+    createdAt: "2026-11-16T06:55:00Z",
+  },
+];
+
+export const demoComplianceDocs: ComplianceDocument[] = [
+  {
+    id: "DOC-PESO-01",
+    title: "PESO Petroleum Storage Licence (Form XIV)",
+    category: "PESO",
+    documentNumber: "P/HQ/DL/15/8902(P89201)",
+    issuingAuthority: "Joint Chief Controller of Explosives, North Circle, Faridabad",
+    issueDate: "2024-04-01",
+    expiryDate: "2027-03-31",
+    status: "VALID",
+    notes: "Valid for 60KL underground installation (Petrol 35KL, Diesel 25KL). Annual inspection due Jan 2027.",
+  },
+  {
+    id: "DOC-WM-02",
+    title: "Legal Metrology Stamping Certificate",
+    category: "WEIGHTS_MEASURES",
+    documentNumber: "DL-WM-STMP-2026-4421",
+    issuingAuthority: "Department of Legal Metrology, Govt of NCT of Delhi",
+    issueDate: "2026-01-15",
+    expiryDate: "2027-01-14",
+    status: "VALID",
+    notes: "Annual verification stamping for 4 dispensers / 8 nozzles. Seals intact on pulsers and CPU boards.",
+  },
+  {
+    id: "DOC-FIRE-03",
+    title: "Delhi Fire Service No Objection Certificate",
+    category: "FIRE_SAFETY",
+    documentNumber: "DFS/MS/RO/2025/1109",
+    issuingAuthority: "Delhi Fire Service Headquarters, Connaught Place",
+    issueDate: "2025-08-10",
+    expiryDate: "2028-08-09",
+    status: "VALID",
+    notes: "Covers 6 DCP 9kg extinguishers, 2 sand buckets per island, foam mobile trolley.",
+  },
+  {
+    id: "DOC-DPCC-04",
+    title: "Pollution Control Consent to Operate (CTO)",
+    category: "POLLUTION",
+    documentNumber: "DPCC/CTO/ORANGE/2025/892",
+    issuingAuthority: "Delhi Pollution Control Committee",
+    issueDate: "2025-05-01",
+    expiryDate: "2028-04-30",
+    status: "VALID",
+    notes: "Vapour recovery stage 1 compliant on tanker decantation vents.",
+  },
+  {
+    id: "DOC-GST-05",
+    title: "GST Registration Certificate (Form GST REG-06)",
+    category: "GST",
+    documentNumber: "07AAAAA0000A1Z5",
+    issuingAuthority: "Government of India / State Tax Department Delhi",
+    issueDate: "2017-07-01",
+    expiryDate: "2099-12-31",
+    status: "VALID",
+    notes: "Active for lubricants and station non-fuel taxable supplies.",
+  },
+  {
+    id: "DOC-INS-06",
+    title: "Public Liability & Forecourt Comprehensive Insurance",
+    category: "INSURANCE",
+    documentNumber: "OICL-ENG-POL-884920",
+    issuingAuthority: "The Oriental Insurance Company Ltd",
+    issueDate: "2026-03-01",
+    expiryDate: "2027-02-28",
+    status: "VALID",
+    notes: "Total sum insured ₹5.50 Crore covering underground tanks, canopy, dispensers, and public liability.",
+  },
+];
+
+export const demoInspectionChecklists: InspectionChecklist[] = [
+  {
+    id: "CHK-2026-11-16",
+    type: "DAILY_OPENING",
+    date: "2026-11-16T05:55:00Z",
+    inspectorName: "Amit Verma (Shift Mgr)",
+    signedOff: true,
+    createdAt: "2026-11-16T06:00:00Z",
+    items: [
+      { id: "i1", label: "Canopy & Driveway illumination check", passed: true },
+      { id: "i2", label: "Fire extinguishers pressure gauge in green zone", passed: true },
+      { id: "i3", label: "Earthing cables & clips inspected at tanker decantation point", passed: true },
+      { id: "i4", label: "Air tower compressor & water dispensing operational", passed: true },
+      { id: "i5", label: "Underground tank water-finding paste test (0mm water)", passed: true },
+      { id: "i6", label: "5-Litre nozzle delivery stamping verification test", passed: true },
+      { id: "i7", label: "POS swipe terminals battery & roll paper verified", passed: true },
+    ],
+  },
+];
+
+export const demoStationAssets: StationAsset[] = [
+  {
+    id: "AST-DSP-01",
+    name: "Tokheim Quantium 510 Dispenser (Island 1)",
+    category: "DISPENSER",
+    serialNumber: "TKQ-510-DEL-8920",
+    installDate: "2023-03-15",
+    lastServiceDate: "2026-08-10",
+    nextServiceDue: "2027-02-10",
+    amcVendor: "Tokheim India Pvt Ltd",
+    amcContact: "+91 22 6150 4400",
+    status: "OPERATIONAL",
+    tickets: [
+      {
+        id: "TCK-01",
+        date: "2026-08-10",
+        description: "Replaced nozzle breakaway coupling and suction filter screen",
+        costPaise: 450000,
+        status: "RESOLVED",
+      },
+    ],
+  },
+  {
+    id: "AST-DSP-02",
+    name: "Tokheim Quantium 510 Dispenser (Island 2)",
+    category: "DISPENSER",
+    serialNumber: "TKQ-510-DEL-8921",
+    installDate: "2023-03-15",
+    lastServiceDate: "2026-08-10",
+    nextServiceDue: "2027-02-10",
+    amcVendor: "Tokheim India Pvt Ltd",
+    amcContact: "+91 22 6150 4400",
+    status: "OPERATIONAL",
+    tickets: [],
+  },
+  {
+    id: "AST-GEN-01",
+    name: "Kirloskar 40 kVA Silent Diesel Generator Set",
+    category: "GENERATOR",
+    serialNumber: "KG-40-SIL-2022-990",
+    installDate: "2022-09-01",
+    lastServiceDate: "2026-09-15",
+    nextServiceDue: "2026-12-15",
+    amcVendor: "Sterling Generators Service Care",
+    amcContact: "+91 11 4100 8820",
+    status: "OPERATIONAL",
+    tickets: [
+      {
+        id: "TCK-02",
+        date: "2026-09-15",
+        description: "Scheduled 250hr 'B' check: Lube oil replacement & coolant flush",
+        costPaise: 1250000,
+        status: "RESOLVED",
+      },
+    ],
+  },
+  {
+    id: "AST-CCTV-01",
+    name: "Hikvision 16-Channel 4K NVR & Forecourt PTZ System",
+    category: "CCTV",
+    serialNumber: "HK-NVR-16CH-892",
+    installDate: "2023-06-20",
+    lastServiceDate: "2026-07-01",
+    nextServiceDue: "2027-01-01",
+    amcVendor: "Matrix Security Solutions",
+    amcContact: "+91 98110 33221",
+    status: "OPERATIONAL",
+    tickets: [],
+  },
+];
+
+export const demoLubricants: LubricantProduct[] = [
+  {
+    id: "LUB-001",
+    sku: "SERVO-4T-20W40-1L",
+    name: "SERVO 4T Super 20W-40 (Motorcycle Oil)",
+    grade: "API SL / JASO MA2",
+    packSizeLitres: 1.0,
+    currentStockUnits: 48,
+    reorderLevelUnits: 15,
+    purchaseCostPaise: 31000, // ₹310.00
+    salePricePaise: 42500, // ₹425.00
+    gstRatePercent: 18,
+  },
+  {
+    id: "LUB-002",
+    sku: "SERVO-PRIDE-15W40-5L",
+    name: "SERVO Pride TC 15W-40 (Heavy Commercial Diesel)",
+    grade: "API CI-4 Plus",
+    packSizeLitres: 5.0,
+    currentStockUnits: 22,
+    reorderLevelUnits: 8,
+    purchaseCostPaise: 142000, // ₹1,420.00
+    salePricePaise: 189000, // ₹1,890.00
+    gstRatePercent: 18,
+  },
+  {
+    id: "LUB-003",
+    sku: "SERVO-FUT-SYNTH-3.5L",
+    name: "SERVO Futura Synth 5W-30 (Fully Synthetic Petrol)",
+    grade: "API SN / ILSAC GF-5",
+    packSizeLitres: 3.5,
+    currentStockUnits: 14,
+    reorderLevelUnits: 6,
+    purchaseCostPaise: 168000, // ₹1,680.00
+    salePricePaise: 235000, // ₹2,350.00
+    gstRatePercent: 18,
+  },
+  {
+    id: "LUB-004",
+    sku: "SERVO-BRAKE-DOT4-500ML",
+    name: "SERVO Brake Fluid Super HD (DOT 4)",
+    grade: "FMVSS 116 DOT 4",
+    packSizeLitres: 0.5,
+    currentStockUnits: 36,
+    reorderLevelUnits: 12,
+    purchaseCostPaise: 14000, // ₹140.00
+    salePricePaise: 19500, // ₹195.00
+    gstRatePercent: 18,
+  },
+];
+
+export const demoDealerAccount: DealerAccount = {
+  balancePaise: 145000000, // ₹14,50,000 credit balance with IOCL
+  indentCreditLimitPaise: 250000000, // ₹25,00,000
+  lastIndentDate: "2026-11-15T18:00:00Z",
+  pendingIndentAmountPaise: 128000000, // ₹12,80,000 (1 Tanker HSD indented)
+  fundsRequiredTomorrowPaise: 185000000, // ₹18,50,000 calculation based on depletion rate
+  recentRemittances: [
+    {
+      date: "2026-11-14",
+      utr: "HDFC884920119",
+      amountPaise: 200000000, // ₹20,00,000
+      bank: "HDFC Bank (CC A/c 50200012345678)",
+    },
+    {
+      date: "2026-11-11",
+      utr: "SBIN994820144",
+      amountPaise: 250000000, // ₹25,00,000
+      bank: "State Bank of India (RO CA 384920194)",
+    },
+  ],
+};
+

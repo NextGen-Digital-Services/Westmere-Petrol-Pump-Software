@@ -63,7 +63,7 @@ export default function SuppliersPage() {
           <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
             Oil Marketing Companies (OMCs) & Vendor Directory
           </span>
-          <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+          <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
             Suppliers & Accounts Payable
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -86,7 +86,7 @@ export default function SuppliersPage() {
         {store.suppliers.map((supplier) => (
           <div
             key={supplier.id}
-            className="bg-card border border-border rounded-sm p-5 flex flex-col justify-between"
+            className="bg-card border border-border rounded-2xl p-5 flex flex-col justify-between shadow-xs"
           >
             <div>
               <div className="flex items-start justify-between pb-3 border-b border-border-subtle">
@@ -94,7 +94,7 @@ export default function SuppliersPage() {
                   <span className="text-[10px] tracking-caps uppercase text-text-faint font-semibold">
                     {supplier.code}
                   </span>
-                  <h3 className="text-base font-serif font-medium text-text mt-0.5">
+                  <h3 className="text-base font-heading font-bold text-text mt-0.5">
                     {supplier.name}
                   </h3>
                   <p className="text-xs text-text-muted mt-0.5">
@@ -147,9 +147,9 @@ export default function SuppliersPage() {
       </div>
 
       {/* Supplier Remittance History Table */}
-      <div className="bg-card border border-border rounded-sm overflow-hidden mt-6">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden mt-6 shadow-xs">
         <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
-          <h3 className="text-base font-serif font-medium tracking-editorial text-text">
+          <h3 className="text-base font-heading font-bold text-text">
             Supplier Remittance & Banking Ledger
           </h3>
           <span className="text-xs text-text-muted">

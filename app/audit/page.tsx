@@ -20,9 +20,9 @@ export default function AuditPage() {
 
   if (!canView) {
     return (
-      <div className="p-12 text-center border border-dashed border-border rounded-sm bg-card/40 my-8">
+      <div className="p-12 text-center border border-dashed border-border rounded-2xl bg-card/40 my-8">
         <ShieldAlert className="w-10 h-10 text-brick mx-auto mb-3" />
-        <h2 className="text-xl font-serif font-medium text-text">Restricted Access</h2>
+        <h2 className="text-xl font-heading font-bold text-text">Restricted Access</h2>
         <p className="text-xs text-text-muted mt-1 max-w-sm mx-auto">
           Audit trails and immutable operational logs require Owner or General Manager security clearance.
         </p>
@@ -47,7 +47,7 @@ export default function AuditPage() {
           <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
             Immutable Regulatory Ledger
           </span>
-          <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+          <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
             System Audit Trails & Diffs
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -104,7 +104,7 @@ export default function AuditPage() {
       </div>
 
       {/* Audit Log Table */}
-      <div className="bg-card border border-border rounded-sm overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-card-subtle border-b border-border">

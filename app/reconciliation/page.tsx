@@ -56,7 +56,7 @@ export default function ReconciliationPage() {
         <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
           Audit Integrity & Forecourt Verification
         </span>
-        <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+        <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
           Forecourt & Tender Reconciliation
         </h1>
         <p className="text-xs text-text-muted mt-1">
@@ -65,10 +65,10 @@ export default function ReconciliationPage() {
       </div>
 
       {/* Section 1: Meter Readings vs POS Sales Litres */}
-      <div className="bg-card border border-border rounded-sm overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
         <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
           <div>
-            <h3 className="text-base font-serif font-medium tracking-editorial text-text">
+            <h3 className="text-base font-heading font-bold text-text">
               Nozzle Totalizer Meter vs POS Billed Volume
             </h3>
             <p className="text-xs text-text-muted mt-0.5">
@@ -120,10 +120,10 @@ export default function ReconciliationPage() {
       </div>
 
       {/* Section 2: Tank Dip vs Book Stock */}
-      <div className="bg-card border border-border rounded-sm overflow-hidden mt-6">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden mt-6 shadow-xs">
         <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
           <div>
-            <h3 className="text-base font-serif font-medium tracking-editorial text-text">
+            <h3 className="text-base font-heading font-bold text-text">
               Underground Tank Physical Dip vs Book Inventory
             </h3>
             <p className="text-xs text-text-muted mt-0.5">
@@ -172,10 +172,10 @@ export default function ReconciliationPage() {
       </div>
 
       {/* Section 3: Shift Tender Reconciliation */}
-      <div className="bg-card border border-border rounded-sm overflow-hidden mt-6">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden mt-6 shadow-xs">
         <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
           <div>
-            <h3 className="text-base font-serif font-medium tracking-editorial text-text">
+            <h3 className="text-base font-heading font-bold text-text">
               Shift Closing Settlement Discrepancy Audits
             </h3>
             <p className="text-xs text-text-muted mt-0.5">

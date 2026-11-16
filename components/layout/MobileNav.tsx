@@ -54,7 +54,7 @@ export const MobileNav: React.FC = () => {
           />
           <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-6 rounded-t-lg max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
-              <span className="text-xs font-serif font-bold tracking-editorial uppercase">
+              <span className="text-xs font-heading font-extrabold tracking-tight uppercase text-text">
                 Petroflow Navigation
               </span>
               <button

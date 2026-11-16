@@ -79,7 +79,7 @@ export default function PermissionsPage() {
           <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
             Role-Based Access Control (RBAC)
           </span>
-          <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+          <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
             User Roles & Permission Matrix
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -98,13 +98,13 @@ export default function PermissionsPage() {
       </div>
 
       {saveStatus && (
-        <div className="p-3 bg-olive/15 border border-olive/30 text-olive text-xs rounded-sm">
+        <div className="p-3 bg-olive/15 border border-olive/30 text-olive text-xs rounded-xl">
           {saveStatus}
         </div>
       )}
 
       {/* Interactive Permission Grid */}
-      <div className="bg-card border border-border rounded-sm overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-card-subtle border-b border-border">

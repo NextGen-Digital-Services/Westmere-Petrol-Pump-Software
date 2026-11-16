@@ -1,24 +1,36 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import { usePetroStore } from "@/store/usePetroStore";
 import { hasPermission } from "@/lib/auth";
-import { StatCard } from "@/components/ui/StatCard";
-import { formatPaise, formatLitres } from "@/lib/format";
+import { BRAND_COLORS } from "@/lib/theme";
+import { AnimatedKpiCard } from "@/components/animations/AnimatedKpiCard";
+import { AnimatedTank } from "@/components/animations/AnimatedTank";
 import { calculateGrossMargin } from "@/lib/calc";
+import {
+  IndianRupee,
+  Fuel,
+  Droplet,
+  TrendingUp,
+  Banknote,
+  QrCode,
+  CreditCard,
+  Users,
+  Layers,
+} from "lucide-react";
 
 export const DashboardMetrics: React.FC = () => {
+  const router = useRouter();
   const {
     sales,
     tanks,
     shifts,
     employees,
     activeRole,
-    deliveries,
   } = usePetroStore();
 
   const isOwner = hasPermission(activeRole, "view_owner_financials");
-
   const todayStr = new Date().toISOString().split("T")[0];
   const todaySales = sales.filter((s) => s.createdAt.startsWith(todayStr) && s.status === "COMPLETED");
 
@@ -55,130 +67,168 @@ export const DashboardMetrics: React.FC = () => {
   const dieselMargin = calculateGrossMargin(todayDieselLitres, 8962, avgPurchaseCostDiesel);
   const totalGrossMarginPaise = petrolMargin.grossMarginPaise + dieselMargin.grossMarginPaise;
 
-  const activeEmployeesCount = employees.filter((e) => e.status === "ACTIVE").length;
-  const runningShiftsCount = shifts.filter((s) => s.status === "OPEN").length;
-
   return (
-    <div className="space-y-4">
-      {/* Primary Row */}
+    <div className="space-y-6">
+      {/* Primary KPI Grid (LogiVenture Style) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Today's Revenue"
-          value={formatPaise(todayRevenuePaise)}
-          delta={{ percentage: 8.4, isPositive: true, periodText: "vs yesterday" }}
-          badge="Live"
+        {/* Card 1: Today's Revenue */}
+        <AnimatedKpiCard
+          title="Today's Sales Revenue"
+          value={`₹${(todayRevenuePaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          subtitle={`${todaySales.length} completed forecourt receipts`}
+          accentColor={BRAND_COLORS.ioclSaffron}
+          icon={IndianRupee}
+          delta={{ value: "8.4%", isPositive: true, label: "vs yesterday" }}
+          onClick={() => router.push("/sales")}
         />
 
-        <StatCard
-          label="Petrol Dispensed"
-          value={formatLitres(todayPetrolLitres)}
-          delta={{ percentage: 5.1, isPositive: true, periodText: "vs last week" }}
-          subtext="MS + Speed Petrol"
+        {/* Card 2: Petrol (MS) Dispensed */}
+        <AnimatedKpiCard
+          title="Motor Spirit (Petrol)"
+          value={Math.round(todayPetrolLitres)}
+          suffix=" L"
+          subtitle="MS & Speed Petrol 95"
+          accentColor={BRAND_COLORS.petrol}
+          icon={Fuel}
+          delta={{ value: "5.1%", isPositive: true, label: "dispensed" }}
+          onClick={() => router.push("/inventory")}
         />
 
-        <StatCard
-          label="Diesel Dispensed"
-          value={formatLitres(todayDieselLitres)}
-          delta={{ percentage: 3.2, isPositive: false, periodText: "vs yesterday" }}
-          subtext="High Speed Diesel"
+        {/* Card 3: Diesel (HSD) Dispensed */}
+        <AnimatedKpiCard
+          title="High Speed Diesel (HSD)"
+          value={Math.round(todayDieselLitres)}
+          suffix=" L"
+          subtitle="Commercial & fleet dispensing"
+          accentColor={BRAND_COLORS.diesel}
+          icon={Droplet}
+          delta={{ value: "3.2%", isPositive: false, label: "dispensed" }}
+          onClick={() => router.push("/inventory")}
         />
 
+        {/* Card 4: Owner Commission / Total Volume */}
         {isOwner ? (
-          <StatCard
-            label="Gross Margin (Est.)"
-            value={formatPaise(totalGrossMarginPaise)}
-            delta={{ percentage: 6.8, isPositive: true, periodText: "Owner Only" }}
-            subtext="Net of crude depot price"
+          <AnimatedKpiCard
+            title="Owner Gross Margin"
+            value={`₹${(totalGrossMarginPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            subtitle="IOCL dealer commission net of depot cost"
+            accentColor={BRAND_COLORS.cash}
+            icon={TrendingUp}
+            delta={{ value: "6.8%", isPositive: true, label: "Owner view" }}
+            onClick={() => router.push("/financials")}
           />
         ) : (
-          <StatCard
-            label="Total Litres Sold"
-            value={formatLitres(todayPetrolLitres + todayDieselLitres)}
-            subtext="Across all dispensers"
+          <AnimatedKpiCard
+            title="Total Forecourt Fuel"
+            value={Math.round(todayPetrolLitres + todayDieselLitres)}
+            suffix=" L"
+            subtitle="Total volume across all active nozzles"
+            accentColor={BRAND_COLORS.ioclBlue}
+            icon={Layers}
+            onClick={() => router.push("/dispensers")}
           />
         )}
       </div>
 
-      {/* Tender Breakdown Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          label="Cash Collection"
-          value={formatPaise(cashPaise)}
-          subtext="Physical cash tender"
-        />
+      {/* Tender Breakdown Quick Strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Banknote className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Cash Tender
+              </span>
+              <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100 font-mono">
+                ₹{(cashPaise / 100).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+          </div>
+        </div>
 
-        <StatCard
-          label="UPI Collection"
-          value={formatPaise(upiPaise)}
-          subtext="Direct QR settlements"
-        />
+        <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-violet-50 dark:bg-violet-950 text-violet-600 dark:text-violet-400 flex items-center justify-center">
+              <QrCode className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                BHIM UPI QR
+              </span>
+              <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100 font-mono">
+                ₹{(upiPaise / 100).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+          </div>
+        </div>
 
-        <StatCard
-          label="Card Collection"
-          value={formatPaise(cardPaise)}
-          subtext="POS swipe terminals"
-        />
+        <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 flex items-center justify-center">
+              <CreditCard className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Card POS
+              </span>
+              <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100 font-mono">
+                ₹{(cardPaise / 100).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+          </div>
+        </div>
 
-        <StatCard
-          label="Credit & Fleet Sales"
-          value={formatPaise(creditPaise)}
-          subtext="Billed to customer ledger"
-        />
+        <div className="p-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+              <Users className="w-4 h-4" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Fleet Credit
+              </span>
+              <span className="text-sm font-extrabold text-slate-900 dark:text-slate-100 font-mono">
+                ₹{(creditPaise / 100).toLocaleString("en-IN", { maximumFractionDigits: 0 })}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Tank Gauges Quick Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {tanks.map((tank) => {
-          const fillPercent = Math.min(
-            100,
-            Math.round((tank.currentStockLitres / tank.capacityLitres) * 100)
-          );
-          const isLow = tank.currentStockLitres <= tank.reorderLevelLitres;
+      {/* Underground Tank Rack (Illustrated Cutaway with Liquid Animation) */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Fuel className="w-4 h-4 text-amber-500" />
+            <h3 className="font-extrabold text-sm uppercase tracking-wider text-slate-800 dark:text-slate-200">
+              Underground Storage Rack (Live Telemetry)
+            </h3>
+          </div>
+          <button
+            onClick={() => router.push("/inventory")}
+            className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700"
+          >
+            Dip Reading Wizard →
+          </button>
+        </div>
 
-          return (
-            <div
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {tanks.map((tank) => (
+            <AnimatedTank
               key={tank.id}
-              className="bg-card border border-border rounded-sm p-4 flex flex-col justify-between"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-semibold text-text">{tank.name}</span>
-                  <span className="block text-[10px] tracking-caps uppercase text-text-muted mt-0.5">
-                    {tank.fuelType}
-                  </span>
-                </div>
-                <span
-                  className={`text-[10px] tracking-caps uppercase px-1.5 py-0.5 border rounded-sm font-medium ${
-                    isLow ? "bg-brick/15 text-brick border-brick/30" : "bg-card text-text-muted border-border"
-                  }`}
-                >
-                  {isLow ? "Reorder Soon" : `${fillPercent}%`}
-                </span>
-              </div>
-
-              {/* Minimal flat gauge bar (No gradients!) */}
-              <div className="mt-4">
-                <div className="w-full bg-border-subtle h-2 rounded-none overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-300 ${
-                      isLow ? "bg-brick" : tank.fuelType === "Diesel" ? "bg-brass" : "bg-olive"
-                    }`}
-                    style={{ width: `${fillPercent}%` }}
-                  />
-                </div>
-
-                <div className="mt-2 flex items-center justify-between text-xs tabular-nums text-text-muted">
-                  <span className="font-medium text-text">
-                    {formatLitres(tank.currentStockLitres)}
-                  </span>
-                  <span className="text-text-faint">
-                    Cap: {formatLitres(tank.capacityLitres)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+              tankName={tank.name}
+              fuelType={tank.fuelType}
+              currentStockLitres={tank.currentStockLitres}
+              capacityLitres={tank.capacityLitres}
+              reorderLevelLitres={tank.reorderLevelLitres}
+              deadStockLitres={tank.deadStockLitres}
+              lastDipCm={tank.lastDipCm}
+              onClick={() => router.push("/inventory")}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

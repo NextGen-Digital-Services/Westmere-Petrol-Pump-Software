@@ -1,15 +1,15 @@
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 
-export const cormorant = Cormorant_Garamond({
+export const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-cormorant",
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-heading",
   display: "swap",
 });
 
-export const manrope = Manrope({
+export const inter = Inter({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-manrope",
+  variable: "--font-body",
   display: "swap",
 });

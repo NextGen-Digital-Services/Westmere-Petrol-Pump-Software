@@ -115,7 +115,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
         {/* Registered Fleet Vehicles */}
         <div>
           <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
-            <span className="text-xs font-serif font-medium tracking-editorial uppercase text-text">
+            <span className="text-xs font-heading font-bold uppercase tracking-wider text-text">
               Authorized Fleet Vehicles ({customer.vehicles.length})
             </span>
           </div>
@@ -124,7 +124,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
             {customer.vehicles.map((v) => (
               <div
                 key={v.id}
-                className="p-3 bg-card border border-border rounded-sm flex items-center justify-between text-xs"
+                className="p-3 bg-card border border-border rounded-xl flex items-center justify-between text-xs"
               >
                 <div>
                   <div className="flex items-center space-x-2">
@@ -156,7 +156,7 @@ export const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
         {/* Recent Credit Sales Ledger */}
         <div>
           <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
-            <span className="text-xs font-serif font-medium tracking-editorial uppercase text-text">
+            <span className="text-xs font-heading font-bold uppercase tracking-wider text-text">
               Credit Sales History
             </span>
             <Button

@@ -53,7 +53,7 @@ export default function ExpensesPage() {
           <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
             Voucher Management & Physical Till Control
           </span>
-          <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+          <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
             Expenses & Daily Cashbook
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -91,41 +91,41 @@ export default function ExpensesPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-sm p-5">
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
           <span className="text-[10px] tracking-caps uppercase text-text-faint font-semibold block">
             Station Cash In Hand
           </span>
-          <span className="text-2xl font-light tabular-nums font-sans text-accent block mt-1">
+          <span className="text-2xl font-bold tabular-nums font-heading text-accent block mt-1">
             {formatPaise(currentCashInHand)}
           </span>
           <span className="text-xs text-text-muted mt-1 block">Live cashbook balance</span>
         </div>
 
-        <div className="bg-card border border-border rounded-sm p-5">
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
           <span className="text-[10px] tracking-caps uppercase text-text-faint font-semibold block">
             Total Incurred Expenses
           </span>
-          <span className="text-2xl font-light tabular-nums font-sans text-text block mt-1">
+          <span className="text-2xl font-bold tabular-nums font-heading text-text block mt-1">
             {formatPaise(totalExpensePaise)}
           </span>
           <span className="text-xs text-text-muted mt-1 block">{store.expenses.length} approved vouchers</span>
         </div>
 
-        <div className="bg-card border border-border rounded-sm p-5">
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
           <span className="text-[10px] tracking-caps uppercase text-text-faint font-semibold block">
             Highest Category
           </span>
-          <span className="text-lg font-medium text-text block mt-1 truncate">
+          <span className="text-lg font-bold text-text block mt-1 truncate">
             Electricity & Power
           </span>
           <span className="text-xs text-text-muted mt-1 block">Monthly canopy & pump usage</span>
         </div>
 
-        <div className="bg-card border border-border rounded-sm p-5">
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
           <span className="text-[10px] tracking-caps uppercase text-text-faint font-semibold block">
             Generator Fuel Reserve
           </span>
-          <span className="text-lg font-medium text-text block mt-1">
+          <span className="text-lg font-bold text-text block mt-1">
             Internal Stock Transfer
           </span>
           <span className="text-xs text-text-muted mt-1 block">Audited station diesel draw</span>
@@ -136,20 +136,20 @@ export default function ExpensesPage() {
       <div className="flex border-b border-border space-x-6">
         <button
           onClick={() => setActiveTab("EXPENSES")}
-          className={`pb-3 text-xs font-serif tracking-editorial uppercase transition-colors relative ${
+          className={`pb-3 text-xs font-heading uppercase tracking-wider transition-colors relative ${
             activeTab === "EXPENSES"
-              ? "text-accent font-semibold border-b-2 border-accent"
-              : "text-text-muted hover:text-text"
+              ? "text-accent font-bold border-b-2 border-accent"
+              : "text-text-muted hover:text-text font-medium"
           }`}
         >
           Expense Vouchers ({store.expenses.length})
         </button>
         <button
           onClick={() => setActiveTab("CASHBOOK")}
-          className={`pb-3 text-xs font-serif tracking-editorial uppercase transition-colors relative ${
+          className={`pb-3 text-xs font-heading uppercase tracking-wider transition-colors relative ${
             activeTab === "CASHBOOK"
-              ? "text-accent font-semibold border-b-2 border-accent"
-              : "text-text-muted hover:text-text"
+              ? "text-accent font-bold border-b-2 border-accent"
+              : "text-text-muted hover:text-text font-medium"
           }`}
         >
           Daily Cashbook Ledger ({store.cashbook.length})
@@ -215,9 +215,9 @@ export default function ExpensesPage() {
 
       {/* Tab 2: Cashbook Ledger */}
       {activeTab === "CASHBOOK" && (
-        <div className="bg-card border border-border rounded-sm overflow-hidden">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xs">
           <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
-            <h3 className="text-base font-serif font-medium tracking-editorial text-text">
+            <h3 className="text-base font-heading font-bold text-text">
               Automated Daily Cashbook (Inflows, Outflows & Bankings)
             </h3>
             <span className="text-xs text-text-muted">

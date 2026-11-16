@@ -30,7 +30,7 @@ export default function NotificationsPage() {
           <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
             Telemetry & Critical Alert Dispatch
           </span>
-          <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+          <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
             Notification Center
           </h1>
           <p className="text-xs text-text-muted mt-1">
@@ -52,7 +52,7 @@ export default function NotificationsPage() {
 
       {/* Simulated Send Banner */}
       {simulatedSendStatus && (
-        <div className="p-3 bg-olive/15 border border-olive/30 text-olive text-xs rounded-sm">
+        <div className="p-3 bg-olive/15 border border-olive/30 text-olive text-xs rounded-xl">
           {simulatedSendStatus}
         </div>
       )}
@@ -63,10 +63,10 @@ export default function NotificationsPage() {
           <button
             key={sev}
             onClick={() => setFilterSeverity(sev)}
-            className={`pb-2.5 text-xs font-serif tracking-editorial uppercase transition-colors ${
+            className={`pb-2.5 text-xs font-heading tracking-wider uppercase transition-colors ${
               filterSeverity === sev
-                ? "text-accent font-semibold border-b-2 border-accent"
-                : "text-text-muted hover:text-text"
+                ? "text-accent font-bold border-b-2 border-accent"
+                : "text-text-muted hover:text-text font-medium"
             }`}
           >
             {sev} ({sev === "ALL" ? store.notifications.length : store.notifications.filter((n) => n.severity === sev).length})

@@ -13,9 +13,9 @@ export default function FinancialsPage() {
 
   if (!isOwner) {
     return (
-      <div className="p-12 text-center border border-dashed border-border rounded-sm bg-card/40 my-8">
+      <div className="p-12 text-center border border-dashed border-border rounded-2xl bg-card/40 my-8">
         <ShieldAlert className="w-10 h-10 text-brick mx-auto mb-3" />
-        <h2 className="text-xl font-serif font-medium text-text">Restricted Access</h2>
+        <h2 className="text-xl font-heading font-bold text-text">Restricted Access</h2>
         <p className="text-xs text-text-muted mt-1 max-w-sm mx-auto">
           Owner-only financial summaries, gross trading margins, supplier payables, and depot purchase costs are confidential and hidden from this role profile.
         </p>
@@ -44,7 +44,7 @@ export default function FinancialsPage() {
         <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
           Confidential Executive Financials
         </span>
-        <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+        <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
           Financial Overview & Gross Margins
         </h1>
         <p className="text-xs text-text-muted mt-1">
@@ -82,10 +82,10 @@ export default function FinancialsPage() {
       </div>
 
       {/* Profit & Loss Statement Card */}
-      <div className="bg-card border border-border rounded-sm p-6 space-y-6">
+      <div className="bg-card border border-border rounded-2xl p-6 space-y-6 shadow-xs">
         <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
           <div>
-            <h3 className="text-base font-serif font-medium tracking-editorial text-text">
+            <h3 className="text-base font-heading font-bold text-text">
               Trading Profit & Loss Statement (Year-to-Date)
             </h3>
             <p className="text-xs text-text-muted mt-0.5">

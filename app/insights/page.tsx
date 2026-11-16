@@ -33,7 +33,7 @@ export default function InsightsPage() {
         <span className="text-[10px] tracking-caps uppercase text-text-muted font-semibold">
           Deterministic Data Query Engine
         </span>
-        <h1 className="text-3xl font-serif font-light tracking-editorial text-text mt-1">
+        <h1 className="text-2xl sm:text-3xl font-heading font-extrabold tracking-tight text-text mt-1">
           Business Insights
         </h1>
         <p className="text-xs text-text-muted mt-1">
@@ -54,13 +54,13 @@ export default function InsightsPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Ask a question about sales, stock, shifts, debtors..."
-          className="flex-1 h-12 px-4 bg-card border border-border text-sm rounded-sm text-text focus:outline-none focus:border-brass"
+          className="flex-1 h-12 px-4 bg-card border border-border text-sm rounded-xl text-text focus:outline-none focus:border-iocl-saffron shadow-xs"
         />
         <Button
           type="submit"
           variant="primary"
           size="lg"
-          className="bg-brass text-charcoal hover:bg-brass-light"
+          className="bg-iocl-saffron hover:bg-iocl-saffron-dark text-white rounded-xl shadow-xs"
           icon={<Sparkles className="w-4 h-4" />}
         >
           Analyze
@@ -69,12 +69,12 @@ export default function InsightsPage() {
 
       {/* Sample Pills */}
       <div className="flex flex-wrap gap-2 items-center text-xs">
-        <span className="text-text-faint">Try asking:</span>
+        <span className="text-text-faint font-medium">Try asking:</span>
         {samplePrompts.map((p) => (
           <button
             key={p}
             onClick={() => handleRun(p)}
-            className="px-2.5 py-1 bg-card hover:bg-card-subtle border border-border rounded-sm text-text-muted hover:text-text transition-colors"
+            className="px-2.5 py-1 bg-card hover:bg-card-subtle border border-border rounded-lg text-text-muted hover:text-text transition-colors shadow-xs"
           >
             {p}
           </button>
@@ -83,9 +83,9 @@ export default function InsightsPage() {
 
       {/* Results Box */}
       {result && (
-        <div className="bg-card border border-border rounded-sm p-6 space-y-5">
+        <div className="bg-card border border-border rounded-2xl p-6 space-y-5 shadow-xs">
           <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
-            <span className="text-xs font-serif font-medium tracking-editorial uppercase text-text">
+            <span className="text-xs font-heading font-bold uppercase text-text">
               Query Result: &quot;{result.question}&quot;
             </span>
             <span className="text-[10px] tracking-caps uppercase px-1.5 py-0.5 border border-border rounded-sm text-text-faint">

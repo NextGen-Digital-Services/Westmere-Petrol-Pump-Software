@@ -61,10 +61,10 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
     >
       <div className="space-y-6">
         {/* Printable Thermal Receipt Box */}
-        <div className="printable-receipt border border-border bg-card p-6 rounded-sm shadow-subtle text-xs space-y-4 max-w-[340px] mx-auto font-sans">
+        <div className="printable-receipt border border-border bg-card p-6 rounded-xl shadow-subtle text-xs space-y-4 max-w-[340px] mx-auto font-sans">
           {/* Station Header */}
           <div className="text-center pb-3 border-b border-border-subtle">
-            <h2 className="font-serif font-bold text-sm tracking-editorial text-text uppercase">
+            <h2 className="font-heading font-extrabold text-sm tracking-tight text-text uppercase">
               {station.name}
             </h2>
             <p className="text-[10px] text-text-muted mt-1 leading-tight">
